@@ -1,37 +1,43 @@
-import { createBrowserRouter, RouterProvider as DOMRouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider as DOMRouterProvider, Navigate } from 'react-router-dom';
 import { AppLayout } from '../../widgets/layout/AppLayout';
 import NotesPage from '../../pages/Notes/NotesPage';
+import SettingsPage from '../../pages/SettingsPage';
+import DashboardPage from '../../pages/DashboardPage';
+import { AuthLayout } from '../../widgets/layout/AuthLayout';
+import LoginPage from '../../pages/Auth/LoginPage';
+import SignupPage from '../../pages/Auth/SignupPage';
+import HomePage from '../../pages/HomePage';
+
+
+
 const router = createBrowserRouter([
+  // THE NEW HOME/LANDING PAGE
   {
     path: "/",
-    element: <AppLayout />,
-    children:[
-
-        {
-    path: "/",
-    element: <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">Welcome back</p>
-    </div>,
+    element: <HomePage />,
   },
-
-        {
-    path: "/notes",
-    element:<NotesPage/>
-    
-  },
+  // Authentication Routes
   {
-    path: "/settings",
-    element: <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">my Setting</h2>
-        <p className="text-muted-foreground">configure AI profiles,billing and system parameter</p>
-    </div>,
-  }
-
-
+    element: <AuthLayout />,
+    children: [
+      { path: "/login", element: <LoginPage /> },
+      { path: "/signup", element: <SignupPage /> }
     ]
   },
-  
+  // Main Application Routes (Moved dashboard to /dashboard)
+  {
+    path: "/dashboard",
+    element: <AppLayout />,
+    children: [
+      { path: "/dashboard", element: <DashboardPage /> },
+      { path: "/dashboard/notes", element: <NotesPage /> },
+      { path: "/dashboard/settings", element: <SettingsPage /> }
+    ]
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />
+  }
 ]);
 export function AppRouter() {
   return <DOMRouterProvider router={router} />;

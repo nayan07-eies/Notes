@@ -63,3 +63,22 @@ export function useGenerateSummary() {
     },
   });
 }
+export function useUploadMedia() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: noteApi.uploadMedia,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: NOTE_QUERY_KEYS.all });
+    },
+  });
+}
+
+export function useImportYoutube() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: noteApi.importYoutube,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: NOTE_QUERY_KEYS.all });
+    },
+  });
+}

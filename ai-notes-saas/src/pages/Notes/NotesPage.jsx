@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react'; // <-- Added useState here
 import { useSelector, useDispatch } from 'react-redux';
 import { useNotes, useCreateNote } from "@/entities/note/model/queries";
-import { setSearchQuery } from "@/entities/note/model/slice";
-import { Search, Plus, FileText, Calendar, Sparkles } from 'lucide-react';
-import { setSelectedNoteId } from '@/entities/note/model/slice';
+import { setSearchQuery, setSelectedNoteId } from "@/entities/note/model/slice";
+import { Search, Plus, FileText, Calendar, Sparkles, UploadCloud } from 'lucide-react'; // <-- Added UploadCloud here
 import { EditNoteModal } from '@/features/notes/edit/EditNoteModal';
+import { MediaUploadModal } from '@/features/upload/ui/MediaUploadModal';
 
 export default function NotesPage() {
   const dispatch = useDispatch();
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const searchQuery = useSelector((state) => state.noteUi.searchQuery);
   
   const { data: notes = [], isLoading, isError } = useNotes();
@@ -34,14 +35,23 @@ export default function NotesPage() {
           <h2 className="text-3xl font-bold tracking-tight">My Notes</h2>
           <p className="text-muted-foreground">Capture thoughts, edit data logs, and synthesize with AI context models.</p>
         </div>
-        <button
-          onClick={handleCreateNote}
-          disabled={createNoteMutation.isPending}
-          className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 self-start sm:self-auto"
-        >
-          <Plus className="h-4 w-4" />
-          New Document
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => setIsUploadModalOpen(true)}
+            className="flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors shadow-sm"
+          >
+            <UploadCloud className="h-4 w-4" />
+            Import Media
+          </button>
+          <button
+            onClick={handleCreateNote}
+            disabled={createNoteMutation.isPending}
+            className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 self-start sm:self-auto"
+          >
+            <Plus className="h-4 w-4" />
+            New Document
+          </button>
+        </div>
       </div>
 
       {/* Action Filters Bar */}
@@ -107,11 +117,13 @@ export default function NotesPage() {
           </div>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto min-h-0">
-         {/* ... existing loading/error/grid logic ... */}
-      </div>
-      {}
-      <EditNoteModal/>
+      
+      {/* Edit Note Modal Mount Point */}
+      <EditNoteModal />
+      <MediaUploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+      />
     </div>
   );
 }
