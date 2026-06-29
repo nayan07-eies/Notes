@@ -7,8 +7,7 @@ import { AuthLayout } from '../../widgets/layout/AuthLayout';
 import LoginPage from '../../pages/Auth/LoginPage';
 import SignupPage from '../../pages/Auth/SignupPage';
 import HomePage from '../../pages/HomePage';
-
-
+import ForgotPasswordPage from '../../pages/Auth/ForgotPasswordPage';
 
 const router = createBrowserRouter([
   // THE NEW HOME/LANDING PAGE
@@ -21,7 +20,8 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { path: "/login", element: <LoginPage /> },
-      { path: "/signup", element: <SignupPage /> }
+      { path: "/signup", element: <SignupPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> }
     ]
   },
   // Main Application Routes (Moved dashboard to /dashboard)

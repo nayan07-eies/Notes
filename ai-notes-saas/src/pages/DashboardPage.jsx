@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { FileText, Sparkles, HardDrive, Activity, ArrowUpRight } from 'lucide-react';
 import { 
   AreaChart, 
@@ -21,70 +22,80 @@ const chartData = [
   { name: 'Sun', notes: 6, ai: 4 },
 ];
 
+// Refactored data for cleaner rendering and staggering
+const statCards = [
+  { title: "Total Documents", value: "45", icon: FileText, desc: "+20% from last month", trend: "emerald-500", showArrow: true },
+  { title: "AI Insights Generated", value: "31", icon: Sparkles, iconColor: "text-primary", desc: "+12% from last month", trend: "emerald-500", showArrow: true },
+  { title: "Storage Used", value: "142 MB", icon: HardDrive, desc: "2.1 GB remaining in plan", trend: "muted-foreground", showArrow: false },
+  { title: "System Status", value: "Healthy", valueColor: "text-emerald-500", icon: Activity, desc: "All AI processing nodes online", trend: "muted-foreground", showArrow: false },
+];
+
+const activities = [
+  { title: "Generated AI Summary", desc: 'For document "Project Architecture"', time: "2 hours ago", icon: Sparkles, color: "text-primary", bg: "bg-primary/10" },
+  { title: "Created new document", desc: '"Q3 Marketing Strategy"', time: "5 hours ago", icon: FileText, color: "text-muted-foreground", bg: "bg-muted" },
+  { title: "System Backup Completed", desc: "All workspaces synced to secure vault", time: "1 day ago", icon: HardDrive, color: "text-muted-foreground", bg: "bg-muted" },
+];
+
+// Framer Motion Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
+
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       {/* Header */}
-      <div>
+      <motion.div variants={itemVariants}>
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         <p className="text-muted-foreground">Welcome back! Here is your AI processing overview.</p>
-      </div>
+      </motion.div>
 
       {/* Top Stat Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Total Documents</h3>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="text-2xl font-bold">45</div>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center text-emerald-500">
-            <ArrowUpRight className="h-3 w-3 mr-1" /> +20% from last month
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">AI Insights Generated</h3>
-            <Sparkles className="h-4 w-4 text-primary" />
-          </div>
-          <div className="text-2xl font-bold">31</div>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center text-emerald-500">
-            <ArrowUpRight className="h-3 w-3 mr-1" /> +12% from last month
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Storage Used</h3>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="text-2xl font-bold">142 MB</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            2.1 GB remaining in plan
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">System Status</h3>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="text-2xl font-bold text-emerald-500">Healthy</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            All AI processing nodes online
-          </p>
-        </div>
+        {statCards.map((stat, idx) => (
+          <motion.div 
+            key={idx}
+            variants={itemVariants}
+            whileHover={{ y: -5 }}
+            className="group rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/30 cursor-default"
+          >
+            <div className="flex items-center justify-between space-y-0 pb-2">
+              <h3 className="tracking-tight text-sm font-medium">{stat.title}</h3>
+              <stat.icon className={`h-4 w-4 transition-transform duration-300 group-hover:scale-125 ${stat.iconColor || 'text-muted-foreground'}`} />
+            </div>
+            <div className={`text-2xl font-bold ${stat.valueColor || ''}`}>{stat.value}</div>
+            <p className={`text-xs mt-1 flex items-center text-${stat.trend}`}>
+              {stat.showArrow && <ArrowUpRight className="h-3 w-3 mr-1" />} 
+              {stat.desc}
+            </p>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Main Chart Area */}
+      {/* Main Chart & Activity Area */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 rounded-xl border border-border bg-card shadow-sm p-6">
+        
+        {/* Recharts Container */}
+        <motion.div variants={itemVariants} className="col-span-4 rounded-xl border border-border bg-card shadow-sm p-6 flex flex-col">
           <div className="mb-4">
             <h3 className="font-semibold text-lg">Activity Overview</h3>
             <p className="text-sm text-muted-foreground">Document creation and AI generation over the last 7 days.</p>
           </div>
-          <div className="h-[300px] w-full">
+          <div className="h-[300px] w-full flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -109,49 +120,32 @@ export default function DashboardPage() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </motion.div>
 
         {/* Recent Activity Feed */}
-        <div className="col-span-3 rounded-xl border border-border bg-card shadow-sm p-6">
+        <motion.div variants={itemVariants} className="col-span-3 rounded-xl border border-border bg-card shadow-sm p-6">
           <h3 className="font-semibold text-lg mb-4">Recent Activity</h3>
           <div className="space-y-6">
-            
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-primary/10 rounded-full text-primary mt-0.5">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Generated AI Summary</p>
-                <p className="text-xs text-muted-foreground mt-0.5">For document "Project Architecture"</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">2 hours ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-muted rounded-full text-muted-foreground mt-0.5">
-                <FileText className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Created new document</p>
-                <p className="text-xs text-muted-foreground mt-0.5">"Q3 Marketing Strategy"</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">5 hours ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-muted rounded-full text-muted-foreground mt-0.5">
-                <HardDrive className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">System Backup Completed</p>
-                <p className="text-xs text-muted-foreground mt-0.5">All workspaces synced to secure vault</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">1 day ago</p>
-              </div>
-            </div>
-
+            {activities.map((activity, idx) => (
+              <motion.div 
+                key={idx}
+                variants={itemVariants}
+                className="group flex items-start gap-4 p-2 -mx-2 rounded-lg transition-colors hover:bg-muted/50"
+              >
+                <div className={`p-2 ${activity.bg} rounded-full ${activity.color} mt-0.5 transition-transform duration-300 group-hover:scale-110`}>
+                  <activity.icon className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{activity.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{activity.desc}</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">{activity.time}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
+        
       </div>
-    </div>
+    </motion.div>
   );
 }
