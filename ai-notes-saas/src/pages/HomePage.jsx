@@ -62,7 +62,7 @@ export default function HomePage() {
         </div>
 
         {/* Right Column: Crazy Animation Engine */}
-        <div className="relative h-[500px] w-full flex items-center justify-center">
+        <div className="relative ws w-full flex items-center justify-center">
           
           {/* AI Core (Center) */}
           <motion.div 

@@ -1,6 +1,5 @@
 // Comment out the real apiClient for now so we don't trigger network requests
 // import { apiClient } from '../../../shared/api/apiClient';
-// import { apiClient } from '../../../shared/api/apiClient';
 
 let mockNotes = [
   { 
@@ -8,14 +7,16 @@ let mockNotes = [
     title: 'Project Architecture', 
     content: 'We are using Vite, React, Redux Toolkit, and React Query with Feature Sliced Design. The setup is highly scalable.', 
     updatedAt: new Date().toISOString(),
-    hasSummary: false
+    hasSummary: false,
+    tags: ['Architecture', 'Frontend']
   },
   { 
     id: '2', 
     title: 'AI Integration Ideas', 
     content: 'Need to add a button that summarizes long meeting transcripts using the new LLM models.', 
     updatedAt: new Date(Date.now() - 86400000).toISOString(),
-    hasSummary: true
+    hasSummary: true,
+    tags: ['AI', 'Ideas']
   }
 ];
 
@@ -39,7 +40,8 @@ export const noteApi = {
       ...noteData,
       id: Math.random().toString(36).substring(7),
       updatedAt: new Date().toISOString(),
-      hasSummary: false
+      hasSummary: false,
+      tags: noteData.tags || ['General']
     };
     mockNotes = [newNote, ...mockNotes];
     return newNote;
@@ -73,38 +75,52 @@ export const noteApi = {
       return mockNotes[index];
     }
     throw new Error("Note not found");
-  }, // <-- Commas here are required to separate methods!
+  },
   
-  uploadMedia: async (file) => {
-    await delay(2000); 
+  // NEW: Accepts the selected template and applies AI Auto-Tags
+  uploadMedia: async (file, template = 'standard') => {
+    await delay(2500); 
     
-    const fileType = file.type;
-    let contentPrefix = "Processed Data Stream: ";
-    if (fileType.includes('audio')) contentPrefix = "Audio Transcription: ";
-    if (fileType.includes('pdf')) contentPrefix = "PDF Extracted Text: ";
-    if (fileType.includes('image')) contentPrefix = "Image Vision Analysis: ";
+    // Simulate auto-tagging based on the template selected
+    const templateTags = {
+      standard: ['Document', 'Summary'],
+      meeting: ['Minutes', 'Action Items', 'Team'],
+      lecture: ['Education', 'Study Guide', 'Academic'],
+      revision: ['Flashcards', 'Exam Prep', 'Review']
+    };
 
     const newNote = {
-      id: Math.random().toString(36).substring(7),
-      title: `${file.name.split('.')[0]} (Parsed)`,
-      content: `${contentPrefix} We successfully extracted the context from ${file.name}. The AI models have indexed this data for future synthesis.`,
+      id: Date.now().toString(),
+      title: `Parsed ${file.name} (${template.toUpperCase()})`,
+      content: `Simulated extraction from ${file.name}. Processed using the ${template} AI directive.`,
+      tags: templateTags[template] || ['AI Generated'],
+      hasSummary: false,
       updatedAt: new Date().toISOString(),
-      hasSummary: false
     };
-    mockNotes = [newNote, ...mockNotes];
+    mockNotes.unshift(newNote);
     return newNote;
-  }, // <-- Required comma!
+  },
 
-  importYoutube: async (url) => {
-    await delay(1500); 
-    const newNote = {
-      id: Math.random().toString(36).substring(7),
-      title: 'YouTube Transcript Insight',
-      content: `Video Source: ${url}\n\nTranscript: In this video, we discuss the core architecture of scalable systems...`,
-      updatedAt: new Date().toISOString(),
-      hasSummary: false
+  // NEW: Accepts the selected template and applies AI Auto-Tags
+  importYoutube: async (url, template = 'standard') => {
+    await delay(2500);
+    
+    const templateTags = {
+      standard: ['Video', 'Transcript'],
+      meeting: ['Webinar', 'Action Items'],
+      lecture: ['Online Course', 'Academic'],
+      revision: ['Study Material', 'Review']
     };
-    mockNotes = [newNote, ...mockNotes];
+
+    const newNote = {
+      id: Date.now().toString(),
+      title: `YouTube Synthesis (${template.toUpperCase()})`,
+      content: `Simulated transcript extraction from ${url}. Processed using the ${template} AI directive.`,
+      tags: templateTags[template] || ['AI Generated'],
+      hasSummary: false,
+      updatedAt: new Date().toISOString(),
+    };
+    mockNotes.unshift(newNote);
     return newNote;
   }
 };

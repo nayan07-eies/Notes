@@ -8,6 +8,7 @@ import LoginPage from '../../pages/Auth/LoginPage';
 import SignupPage from '../../pages/Auth/SignupPage';
 import HomePage from '../../pages/HomePage';
 import ForgotPasswordPage from '../../pages/Auth/ForgotPasswordPage';
+import StudyPage from '@/pages/StudyPage';
 
 const router = createBrowserRouter([
   // THE NEW HOME/LANDING PAGE
@@ -31,7 +32,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/dashboard", element: <DashboardPage /> },
       { path: "/dashboard/notes", element: <NotesPage /> },
-      { path: "/dashboard/settings", element: <SettingsPage /> }
+      { path: "/dashboard/settings", element: <SettingsPage /> },
+      {path: "/dashboard/study", element:<StudyPage />}
     ]
   },
   {
