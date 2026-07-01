@@ -10,6 +10,7 @@ export function LogoutButton({ variant = "ghost", className = "" }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    if(confirm("Are you sure you want to sign out?"))
     dispatch(logout());
     navigate('/');
   };

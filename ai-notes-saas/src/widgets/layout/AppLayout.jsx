@@ -17,7 +17,7 @@ import {
 // 2. Add the Study Assistant to your navigation array!
 const NAVIGATION_ITEMS = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { name: 'My Notes', path: '/dashboard/notes', icon: FileText },
+  // { name: 'My Notes', path: '/dashboard/notes', icon: FileText },
   { name: 'Study Assistant', path: '/dashboard/study', icon: GraduationCap }, // <-- Added this!
   { name: 'Settings', path: '/dashboard/settings', icon: Settings },
 ];

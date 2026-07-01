@@ -15,7 +15,7 @@ export default function SignupPage() {
     // Mock API call
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/dashboard/notes'); // Redirect to dashboard on success
+      navigate('/dashboard/study'); // Redirect to dashboard on success
     }, 2000);
   };
 

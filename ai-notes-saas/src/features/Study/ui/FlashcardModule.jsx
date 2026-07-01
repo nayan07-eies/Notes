@@ -19,7 +19,7 @@ const MOCK_FLASHCARDS = [
 ];
 
 export default function FlashcardModule() {
-  const [cards, setCards] = useState(MOCK_FLASHCARDS);
+  const [cards] = useState(MOCK_FLASHCARDS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0); // -1 for left (review), 1 for right (mastered)

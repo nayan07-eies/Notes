@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+// We keep this as a safe fallback just in case your API hasn't loaded yet
 const MOCK_QUIZ_DATA = [
   {
     id: 1,
@@ -38,7 +39,11 @@ const MOCK_QUIZ_DATA = [
   }
 ];
 
-export default function QuizModule() {
+// Add the { data } prop here
+export default function QuizModule({ data }) {
+  // Use the real data if it exists, otherwise use the Mock data
+  const quizSource = data && data.length > 0 ? data : MOCK_QUIZ_DATA;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -48,8 +53,9 @@ export default function QuizModule() {
   const [aiFeedback, setAiFeedback] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const currentQuestion = MOCK_QUIZ_DATA[currentIndex];
-  const isComplete = currentIndex >= MOCK_QUIZ_DATA.length;
+  // Read from quizSource
+  const currentQuestion = quizSource[currentIndex];
+  const isComplete = currentIndex >= quizSource.length;
 
   const handleSelect = (optionId) => {
     if (isSubmitted) return;
@@ -117,13 +123,13 @@ export default function QuizModule() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-zinc-500">
-                Question {currentIndex + 1} of {MOCK_QUIZ_DATA.length}
+                Question {currentIndex + 1} of {quizSource.length}
               </span>
               <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-blue-500 rounded-full"
-                  initial={{ width: `${(currentIndex / MOCK_QUIZ_DATA.length) * 100}%` }}
-                  animate={{ width: `${((currentIndex + 1) / MOCK_QUIZ_DATA.length) * 100}%` }}
+                  initial={{ width: `${(currentIndex / quizSource.length) * 100}%` }}
+                  animate={{ width: `${((currentIndex + 1) / quizSource.length) * 100}%` }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                 />
               </div>
@@ -245,7 +251,7 @@ export default function QuizModule() {
                       disabled={isGenerating}
                       className="w-full h-12 bg-purple-600 hover:bg-purple-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] font-semibold rounded-xl transition-all mt-2"
                     >
-                      {currentIndex === MOCK_QUIZ_DATA.length - 1 ? 'View Results' : 'Next Question'}
+                      {currentIndex === quizSource.length - 1 ? 'View Results' : 'Next Question'}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </motion.div>
@@ -268,21 +274,21 @@ export default function QuizModule() {
                 cx="64" cy="64" r="60"
                 stroke="currentColor" strokeWidth="8" fill="transparent"
                 strokeDasharray={377}
-                strokeDashoffset={377 - (377 * (score / MOCK_QUIZ_DATA.length))}
+                strokeDashoffset={377 - (377 * (score / quizSource.length))}
                 className="text-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                 initial={{ strokeDashoffset: 377 }}
-                animate={{ strokeDashoffset: 377 - (377 * (score / MOCK_QUIZ_DATA.length)) }}
+                animate={{ strokeDashoffset: 377 - (377 * (score / quizSource.length)) }}
                 transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-bold text-white">{score}/{MOCK_QUIZ_DATA.length}</span>
+              <span className="text-3xl font-bold text-white">{score}/{quizSource.length}</span>
             </div>
           </div>
 
           <h2 className="text-3xl font-bold text-white mb-2">Quiz Completed</h2>
           <p className="text-zinc-400 mb-8 max-w-sm">
-            {score === MOCK_QUIZ_DATA.length 
+            {score === quizSource.length 
               ? "Flawless execution. Your contextual understanding is perfect." 
               : "Good effort. Review the AI feedback to patch the gaps in your mental model."}
           </p>

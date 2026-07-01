@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider as DOMRouterProvider, Navigate } from 'react-router-dom';
 import { AppLayout } from '../../widgets/layout/AppLayout';
-import NotesPage from '../../pages/Notes/NotesPage';
 import SettingsPage from '../../pages/SettingsPage';
 import DashboardPage from '../../pages/DashboardPage';
 import { AuthLayout } from '../../widgets/layout/AuthLayout';
@@ -31,7 +30,6 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: "/dashboard", element: <DashboardPage /> },
-      { path: "/dashboard/notes", element: <NotesPage /> },
       { path: "/dashboard/settings", element: <SettingsPage /> },
       {path: "/dashboard/study", element:<StudyPage />}
     ]

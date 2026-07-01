@@ -14,7 +14,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/dashboard/notes');
+      navigate('/dashboard/study');
     }, 2000);
   };
 

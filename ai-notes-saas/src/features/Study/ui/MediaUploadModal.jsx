@@ -7,7 +7,6 @@ import {
   Youtube, 
   FileText, 
   FileAudio, 
-  FileVideo,
   CheckCircle2,
   Sparkles,
   ArrowRight
