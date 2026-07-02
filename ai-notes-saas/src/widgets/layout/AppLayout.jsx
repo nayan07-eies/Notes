@@ -134,12 +134,12 @@ export function AppLayout() {
       {/* MAIN CONTENT WORKSPACE */}
       <div className="flex flex-1 flex-col overflow-hidden w-full">
         {/* Top Navbar Header */}
-        <header className="flex h-16 items-center border-b border-border bg-card px-4 md:px-6">
+        {/* <header className="flex h-16 items-center border-b border-border bg-card px-4 md:px-6"> */}
           
           {/* Hamburger Menu (Mobile Only) */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="mr-4 rounded-md p-2 hover:bg-muted text-muted-foreground md:hidden"
+            className="mr-4  bg-[#09090b] rounded-md p-2 hover:bg-muted text-muted-foreground md:hidden "
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -154,10 +154,10 @@ export function AppLayout() {
             </button>
           )}
           
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <h1 className="text-sm font-medium text-muted-foreground">Workspace / Enterprise</h1>
-          </div>
-        </header>
+          </div> */}
+      
 
         {/* Dynamic Route View Mountpoint */}
         <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
