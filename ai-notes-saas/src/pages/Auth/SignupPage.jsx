@@ -42,7 +42,7 @@ export default function SignupPage() {
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input 
                 id="firstName" 
-                placeholder="John" 
+                placeholder="Nayan" 
                 className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-primary/20" 
                 required 
                 disabled={isLoading} 
@@ -55,7 +55,7 @@ export default function SignupPage() {
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input 
                 id="lastName" 
-                placeholder="Doe" 
+                placeholder="Tarpara" 
                 className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-primary/20" 
                 required 
                 disabled={isLoading} 
@@ -72,7 +72,7 @@ export default function SignupPage() {
             <Input 
               id="email" 
               type="email" 
-              placeholder="name@company.com" 
+              placeholder="name@gmail.com" 
               className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-primary/20" 
               required 
               disabled={isLoading} 
@@ -88,6 +88,7 @@ export default function SignupPage() {
             <Input 
               id="password" 
               type="password" 
+              placeholder="********"
               className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-primary/20" 
               required 
               disabled={isLoading} 
@@ -122,9 +123,9 @@ export default function SignupPage() {
         </Button>
       </form>
 
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-sm  text-muted-foreground">
         Already have an account?{' '}
-        <Link to="/login" className="text-primary hover:underline font-medium transition-colors">
+        <Link to="/login" className="text-primary text-zinc-50  hover:underline font-medium transition-colors">
           Sign in
         </Link>
       </div>

@@ -59,6 +59,7 @@ export default function HomePage() {
               <Link to="/login">Sign In</Link>
             </Button>
           </motion.div>
+          <footer/>
         </div>
 
         {/* Right Column: Crazy Animation Engine */}
@@ -130,8 +131,8 @@ export default function HomePage() {
             <div className="h-2 w-3/4 bg-primary/20 rounded-full" />
           </motion.div>
 
-        </div>
-      </div>
+        </div>       
+      </div>     
     </div>
   );
 }

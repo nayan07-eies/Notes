@@ -72,7 +72,7 @@ export function AuthLayout() {
       </div>
 
       {/* RIGHT SIDE: React Router Outlet */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 relative bg-zinc-950">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 relative border-bs-orange-50">
         {/* Subtle noise texture overlay for the frosted look */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay"></div>
         

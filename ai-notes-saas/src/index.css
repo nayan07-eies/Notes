@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* ─── CRITICAL TAILWIND V4 DARK MODE CONFIGURATION ─── */
+/* This tells Tailwind v4 to trigger dark: utility variants when .dark is present on any parent container */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -41,8 +45,6 @@
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
@@ -50,7 +52,8 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    /* Hardcoded color fallbacks override to keep custom look synchronized */
+    --background: 240 10% 3.9%; /* Base Zinc dark */
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -64,20 +67,67 @@
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
+    
+    /* Informs modern engines to apply system dark defaults for forms/scrollbars natively */
+    color-scheme: dark;
   }
 }
-.perspective-1000 { perspective: 1000px; } .preserve-3d { transform-style: preserve-3d; } .backface-hidden { backface-visibility: hidden; } .rotate-y-180 { transform: rotateY(180deg); }
+
+/* ─── CUSTOM PREMIUM SCROLLBAR ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(160, 160, 160, 0.2) transparent;
+}
+
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.2);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ─── VISUAL MODULE HELPERS ─── */
+.perspective-1000 { perspective: 1000px; } 
+.preserve-3d { transform-style: preserve-3d; } 
+.backface-hidden { backface-visibility: hidden; } 
+.rotate-y-180 { transform: rotateY(180deg); }
 
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-zinc-50 text-zinc-900 dark:bg-[#09090b] dark:text-zinc-50 antialiased transition-colors duration-300;
   }
 }
