@@ -74,7 +74,7 @@ export function AuthLayout() {
       {/* RIGHT SIDE: React Router Outlet */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 relative border-bs-orange-50">
         {/* Subtle noise texture overlay for the frosted look */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay"></div>
+       <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay"></div>
         
         <div className="w-full max-w-md relative z-10">
           {/* This is where your Login/Signup pages will render */}

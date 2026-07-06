@@ -73,7 +73,7 @@ export function DocumentWorkspace() {
   };
 
   const ToolboxContent = () => (
-    <div className="flex flex-col gap-8 w-full pb-8">
+    <div className="flex flex-col gap-8 w-full pb-8 ">
       <div>
         <h4 className="text-[11px] font-semibold tracking-widest text-zinc-500 dark:text-zinc-400 uppercase mb-3">Study Engine</h4>
         <div className="grid grid-cols-2 gap-2 w-full">
@@ -127,7 +127,7 @@ export function DocumentWorkspace() {
   );
 
   return (
-    <div className="flex h-[100dvh] lg:h-[calc(100vh-4rem)] w-full bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 overflow-hidden lg:rounded-2xl lg:border border-zinc-200 dark:border-white/10 lg:shadow-2xl relative transition-colors duration-300">
+    <div className="flex  h-[100dvh] lg:h-[calc(100vh-4rem)] w-full bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 overflow-hidden lg:rounded-2xl lg:border border-zinc-200 dark:border-white/10 lg:shadow-2xl relative transition-colors duration-300 ">
       
       {/* --- MOBILE LEFT SIDEBAR --- */}
       <AnimatePresence>
@@ -213,7 +213,7 @@ export function DocumentWorkspace() {
             
             <div className="flex items-center gap-2 text-sm text-zinc-500 truncate">
               <span className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-100 dark:bg-white/5 text-zinc-700 dark:text-zinc-300">
-                <Sparkles className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" /> Workspace
+                <Sparkles className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" /> StudyTime
               </span>
               {pipelineState !== 'ingest' && (
                 <>
@@ -231,7 +231,7 @@ export function DocumentWorkspace() {
           )}
         </header>
 
-        <main className="flex-1 relative overflow-y-auto">
+        <main className="flex-1  relative overflow-y-auto">
           <AnimatePresence mode="wait">
             
             {/* STAGE 1: INGESTION */}

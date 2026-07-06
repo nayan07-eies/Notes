@@ -56,7 +56,7 @@ export default function DashboardPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-6 pl-6 pt-6"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>

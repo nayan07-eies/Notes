@@ -7,11 +7,11 @@ import {
   ArrowRight, 
   Target,
   Sparkles,
-  RefreshCcw
+  RefreshCcw,
+  Keyboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// We keep this as a safe fallback just in case your API hasn't loaded yet
 const MOCK_QUIZ_DATA = [
   {
     id: 1,
@@ -39,9 +39,7 @@ const MOCK_QUIZ_DATA = [
   }
 ];
 
-// Add the { data } prop here
 export default function QuizModule({ data }) {
-  // Use the real data if it exists, otherwise use the Mock data
   const quizSource = data && data.length > 0 ? data : MOCK_QUIZ_DATA;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,11 +47,9 @@ export default function QuizModule({ data }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   
-  // AI Streaming State
   const [aiFeedback, setAiFeedback] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Read from quizSource
   const currentQuestion = quizSource[currentIndex];
   const isComplete = currentIndex >= quizSource.length;
 
@@ -70,14 +66,13 @@ export default function QuizModule({ data }) {
       setScore(prev => prev + 1);
     }
 
-    // Trigger AI Feedback Stream
     setIsGenerating(true);
     setAiFeedback('');
   };
 
-  // Simulate AI Token Streaming for the explanation
+  // Simulate AI streaming for question analysis response blocks
   useEffect(() => {
-    if (!isGenerating || !isSubmitted) return;
+    if (!isGenerating || !isSubmitted || !currentQuestion) return;
 
     const words = currentQuestion.explanation.split(' ');
     let wordIndex = 0;
@@ -90,10 +85,39 @@ export default function QuizModule({ data }) {
         clearInterval(interval);
         setIsGenerating(false);
       }
-    }, 30); // Fast typing speed
+    }, 25);
 
     return () => clearInterval(interval);
-  }, [isGenerating, isSubmitted, currentQuestion]);
+  }, [isGenerating, isSubmitted, currentIndex]);
+
+  // Accessibility Hotkeys handler loop
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isComplete) return;
+
+      const keyMap = {
+        KeyA: 'A', Digit1: 'A',
+        KeyB: 'B', Digit2: 'B',
+        KeyC: 'C', Digit3: 'C',
+        KeyD: 'D', Digit4: 'D'
+      };
+
+      if (keyMap[e.code] && !isSubmitted) {
+        e.preventDefault();
+        handleSelect(keyMap[e.code]);
+      } else if (e.code === 'Enter') {
+        e.preventDefault();
+        if (!isSubmitted && selectedOption) {
+          handleSubmit();
+        } else if (isSubmitted && !isGenerating) {
+          handleNext();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedOption, isSubmitted, isGenerating, currentIndex, isComplete]);
 
   const handleNext = () => {
     setCurrentIndex(prev => prev + 1);
@@ -111,67 +135,77 @@ export default function QuizModule({ data }) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[550px] py-8">
+    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[550px] py-4 select-none px-2">
       
       {!isComplete ? (
-        <div className="w-full flex flex-col w-full">
-          {/* Header & Progress */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-2 text-zinc-400">
-              <Target className="w-5 h-5 text-blue-400" />
-              <span className="font-medium tracking-tight">Knowledge Check</span>
+        <div className="w-full flex flex-col">
+          {/* HEADER LAYER PROGRESS */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-zinc-200 dark:border-white/5 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                <Target className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm block">Knowledge Check</span>
+                <span className="text-[11px] text-zinc-500 font-medium">Concept Validation Core</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-zinc-500">
+            
+            <div className="flex items-center justify-between sm:justify-end gap-4">
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 bg-zinc-200/50 dark:bg-white/5 px-2.5 py-1 rounded-md border border-zinc-300/30 dark:border-white/5 whitespace-nowrap">
                 Question {currentIndex + 1} of {quizSource.length}
               </span>
-              <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-32 h-2 bg-zinc-200 dark:bg-white/10 rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-blue-500 rounded-full"
                   initial={{ width: `${(currentIndex / quizSource.length) * 100}%` }}
                   animate={{ width: `${((currentIndex + 1) / quizSource.length) * 100}%` }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                 />
               </div>
             </div>
           </div>
 
+          {/* QUESTION PANEL */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 15 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col gap-6"
+              exit={{ opacity: 0, x: -15 }}
+              transition={{ duration: 0.25 }}
+              className="flex flex-col gap-5"
             >
-              {/* Question Text */}
-              <h2 className="text-2xl md:text-3xl font-semibold text-zinc-100 leading-snug">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-snug">
                 {currentQuestion.question}
               </h2>
 
-              {/* Options List */}
-              <div className="flex flex-col gap-3 mt-4">
+              {/* OPTIONS MATRIX */}
+              <div className="flex flex-col gap-3 mt-2">
                 {currentQuestion.options.map((option) => {
                   const isSelected = selectedOption === option.id;
                   const isCorrectAnswer = option.id === currentQuestion.correctAnswer;
                   
-                  // Determine styling based on state
-                  let cardStyle = "border-white/10 bg-white/[0.02] text-zinc-300 hover:bg-white/[0.05]";
+                  let cardStyle = "border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.01] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/[0.04] hover:border-zinc-300 dark:hover:border-white/20";
+                  let indicatorBadge = "bg-zinc-100 dark:bg-white/10 text-zinc-800 dark:text-zinc-300";
                   let icon = null;
 
                   if (isSubmitted) {
                     if (isCorrectAnswer) {
-                      cardStyle = "border-emerald-500/50 bg-emerald-500/10 text-emerald-50";
-                      icon = <CheckCircle2 className="w-5 h-5 text-emerald-400" />;
+                      cardStyle = "border-emerald-500/40 dark:border-emerald-500/50 bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-50";
+                      indicatorBadge = "bg-emerald-500 text-white";
+                      icon = <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
                     } else if (isSelected && !isCorrectAnswer) {
-                      cardStyle = "border-red-500/50 bg-red-500/10 text-red-50";
-                      icon = <XCircle className="w-5 h-5 text-red-400" />;
+                      cardStyle = "border-red-500/40 dark:border-red-500/50 bg-red-500/5 dark:bg-red-500/10 text-red-900 dark:text-red-50";
+                      indicatorBadge = "bg-red-500 text-white";
+                      icon = <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />;
                     } else {
-                      cardStyle = "border-white/5 bg-transparent text-zinc-600 opacity-50";
+                      cardStyle = "border-zinc-100 dark:border-white/[0.02] bg-transparent text-zinc-400 dark:text-zinc-600 opacity-40";
+                      indicatorBadge = "bg-zinc-100/50 dark:bg-white/5 text-zinc-400 dark:text-zinc-600";
                     }
                   } else if (isSelected) {
-                    cardStyle = "border-blue-500 bg-blue-500/10 text-blue-50";
+                    cardStyle = "border-blue-500 dark:border-blue-400 bg-blue-500/[0.03] dark:bg-blue-400/10 text-blue-700 dark:text-blue-400 font-medium shadow-sm";
+                    indicatorBadge = "bg-blue-500 dark:bg-blue-400 text-white dark:text-zinc-950";
                   }
 
                   return (
@@ -179,20 +213,18 @@ export default function QuizModule({ data }) {
                       key={option.id}
                       onClick={() => handleSelect(option.id)}
                       disabled={isSubmitted}
-                      whileHover={!isSubmitted ? { scale: 1.01 } : {}}
-                      whileTap={!isSubmitted ? { scale: 0.99 } : {}}
-                      className={`relative flex items-center justify-between w-full p-5 rounded-2xl border transition-all text-left ${cardStyle} disabled:cursor-default`}
+                      whileHover={!isSubmitted ? { scale: 1.005 } : {}}
+                      whileTap={!isSubmitted ? { scale: 0.995 } : {}}
+                      className={`relative flex items-center justify-between w-full p-4.5 rounded-2xl border transition-all text-left shadow-xs ${cardStyle} disabled:cursor-default`}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold ${
-                          isSelected && !isSubmitted ? 'bg-blue-500 text-white' : 'bg-white/10'
-                        }`}>
+                      <div className="flex items-center gap-4 pr-4">
+                        <div className={`flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold shrink-0 transition-colors ${indicatorBadge}`}>
                           {option.id}
                         </div>
-                        <span className="text-base md:text-lg">{option.text}</span>
+                        <span className="text-sm sm:text-base leading-relaxed">{option.text}</span>
                       </div>
                       {icon && (
-                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="shrink-0">
                           {icon}
                         </motion.div>
                       )}
@@ -201,13 +233,13 @@ export default function QuizModule({ data }) {
                 })}
               </div>
 
-              {/* Action Area & AI Feedback */}
+              {/* DYNAMIC ACTION MATRIX ELEMENT */}
               <div className="mt-4">
                 {!isSubmitted ? (
                   <Button
                     onClick={handleSubmit}
                     disabled={!selectedOption}
-                    className="w-full h-12 bg-white text-zinc-950 hover:bg-zinc-200 font-semibold rounded-xl transition-all disabled:opacity-50"
+                    className="w-full h-12 bg-zinc-900 dark:bg-zinc-50 text-white dark:text-[#09090b] hover:bg-zinc-800 dark:hover:bg-zinc-200 font-semibold rounded-xl transition-all disabled:opacity-40"
                   >
                     Submit Answer
                   </Button>
@@ -216,30 +248,30 @@ export default function QuizModule({ data }) {
                     layout
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative flex flex-col gap-6 p-6 rounded-2xl bg-purple-500/10 border border-purple-500/20 overflow-hidden"
+                    className="relative flex flex-col gap-6 p-5 sm:p-6 rounded-2xl bg-purple-500/5 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 pointer-events-none" />
                     
                     <div className="relative z-10 flex gap-4">
-                      <Bot className={`w-6 h-6 text-purple-400 mt-1 ${isGenerating ? 'animate-pulse' : ''}`} />
-                      <div className="flex-1 space-y-2">
-                        <h4 className="text-sm font-medium text-purple-300 flex items-center gap-2">
+                      <Bot className={`w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 shrink-0 ${isGenerating ? 'animate-pulse' : ''}`} />
+                      <div className="flex-1 space-y-2 min-w-0">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 flex items-center gap-2">
                           AI Analysis
                           {isGenerating && (
-                            <span className="flex gap-1">
-                              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}>.</motion.span>
-                              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}>.</motion.span>
-                              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}>.</motion.span>
+                            <span className="flex gap-0.5">
+                              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}>.</motion.span>
+                              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}>.</motion.span>
+                              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}>.</motion.span>
                             </span>
                           )}
                         </h4>
-                        <p className="text-zinc-200 leading-relaxed text-base">
+                        <p className="text-zinc-700 dark:text-zinc-200 leading-relaxed text-sm sm:text-base">
                           {aiFeedback}
                           {isGenerating && (
                             <motion.span
                               animate={{ opacity: [1, 0] }}
-                              transition={{ duration: 0.8, repeat: Infinity }}
-                              className="inline-block w-2 h-4 ml-1 bg-purple-400 rounded-sm translate-y-0.5"
+                              transition={{ duration: 0.6, repeat: Infinity }}
+                              className="inline-block w-1.5 h-3.5 ml-1 bg-purple-500 dark:bg-purple-400 rounded-sm translate-y-0.5"
                             />
                           )}
                         </p>
@@ -249,9 +281,9 @@ export default function QuizModule({ data }) {
                     <Button
                       onClick={handleNext}
                       disabled={isGenerating}
-                      className="w-full h-12 bg-purple-600 hover:bg-purple-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] font-semibold rounded-xl transition-all mt-2"
+                      className="w-full h-12 bg-purple-600 dark:bg-purple-600 hover:bg-purple-500 dark:hover:bg-purple-500 text-white shadow-md shadow-purple-500/10 font-semibold rounded-xl transition-all mt-2"
                     >
-                      {currentIndex === quizSource.length - 1 ? 'View Results' : 'Next Question'}
+                      <span>{currentIndex === quizSource.length - 1 ? 'View Results' : 'Next Question'}</span>
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </motion.div>
@@ -261,48 +293,57 @@ export default function QuizModule({ data }) {
           </AnimatePresence>
         </div>
       ) : (
-        // Results Screen
+        // RESULTS DISPLAY PANEL
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full flex flex-col items-center justify-center text-center p-8 rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl"
+          className="w-full flex flex-col items-center justify-center text-center p-6 sm:p-10 rounded-3xl border shadow-md bg-white dark:bg-[#0a0a0c] border-zinc-200 dark:border-white/10"
         >
           <div className="relative w-32 h-32 mb-6">
             <svg className="w-full h-full transform -rotate-90">
-              <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
+              <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-zinc-100 dark:text-white/5" />
               <motion.circle
-                cx="64" cy="64" r="60"
+                cx="64" cy="64" r="58"
                 stroke="currentColor" strokeWidth="8" fill="transparent"
-                strokeDasharray={377}
-                strokeDashoffset={377 - (377 * (score / quizSource.length))}
-                className="text-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                initial={{ strokeDashoffset: 377 }}
-                animate={{ strokeDashoffset: 377 - (377 * (score / quizSource.length)) }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+                strokeDasharray={364}
+                strokeDashoffset={364 - (364 * (score / quizSource.length))}
+                className="text-blue-500 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]"
+                initial={{ strokeDashoffset: 364 }}
+                animate={{ strokeDashoffset: 364 - (364 * (score / quizSource.length)) }}
+                transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-bold text-white">{score}/{quizSource.length}</span>
+              <span className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-50">{score}/{quizSource.length}</span>
             </div>
           </div>
 
-          <h2 className="text-3xl font-bold text-white mb-2">Quiz Completed</h2>
-          <p className="text-zinc-400 mb-8 max-w-sm">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-50 mb-2">Quiz Evaluation Complete</h2>
+          <p className="text-zinc-500 dark:text-zinc-400 mb-8 max-w-sm text-sm sm:text-base leading-relaxed">
             {score === quizSource.length 
               ? "Flawless execution. Your contextual understanding is perfect." 
-              : "Good effort. Review the AI feedback to patch the gaps in your mental model."}
+              : "Good effort. Review the AI feedback breakdowns to patch the gaps in your dynamic mental memory layout maps."}
           </p>
 
-          <div className="flex gap-4">
-            <Button variant="outline" onClick={resetQuiz} className="border-white/10 hover:bg-white/5 h-11 px-6">
-              <RefreshCcw className="w-4 h-4 mr-2" />
-              Retake
+          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs justify-center">
+            <Button variant="outline" onClick={resetQuiz} className="flex-1 rounded-xl border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 font-semibold text-sm h-11">
+              <RefreshCcw className="w-3.5 h-3.5 mr-2" />
+              <span>Retake</span>
             </Button>
-            <Button onClick={() => window.location.reload()} className="bg-white text-zinc-950 hover:bg-zinc-200 font-semibold h-11 px-6">
+            <Button onClick={() => window.location.reload()} className="flex-1 bg-zinc-900 dark:bg-zinc-50 text-white dark:text-[#09090b] hover:bg-zinc-800 dark:hover:bg-zinc-200 font-semibold rounded-xl text-sm h-11 shadow-sm">
               Return to Hub
             </Button>
           </div>
         </motion.div>
+      )}
+
+      {/* FOOTER KEYBOARD INSTRUCTIONS SHORTCUT HOVER */}
+      {!isComplete && (
+        <div className="hidden sm:flex items-center gap-4 text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-white/[0.01] border border-zinc-200 dark:border-white/5 px-4 py-2 rounded-xl mt-8">
+          <span className="flex items-center gap-1"><Keyboard className="w-3.5 h-3.5" /> Shortcuts:</span>
+          <span><kbd className="bg-zinc-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-[10px] font-bold">1-4</kbd> / <kbd className="bg-zinc-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-[10px] font-bold">A-D</kbd> Toggle Options</span>
+          <span><kbd className="bg-zinc-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-[10px] font-bold">Enter</kbd> Confirm / Advance</span>
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleDarkMode } from '@/app/store/uiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,20 +20,47 @@ export default function SettingsPage() {
   
   const [activeTab, setActiveTab] = useState('account');
   const [isSaving, setIsSaving] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null); // Holds the uploaded image URL string
+  const fileInputRef = useRef(null);
   const [profileData, setProfileData] = useState({
-    firstName: 'Alex',
-    lastName: 'Chen',
-    email: 'alex.chen@example.com'
+    firstName: 'Nayan',
+    lastName: 'Tarpara',
+    email: 'nayan.tarpra@example.com'
   });
+
+  // Triggers hidden native operating system file explorer prompt window
+  const handleTriggerUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Converts raw file binary arrays into client memory URL parameters for instant preview tracking
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate size (1MB max constraint parameters matching layout limits)
+    if (file.size > 1024 * 1024) {
+      alert("File size exceeds 1MB limitation constraint.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleProfileSave = (e) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => setIsSaving(false), 1500);
+    setTimeout(() => {
+      setIsSaving(false);
+      alert("Profile configurations saved successfully!");
+    }, 1500);
   };
 
   return (
-    // FIX: Removed hardcoded background, let the layout container handle it
     <div className="w-full max-w-6xl mx-auto p-4 md:p-8 space-y-8">
       
       {/* HEADER */}
@@ -54,7 +81,7 @@ export default function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-left ${
                   isActive 
                     ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold' 
                     : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-zinc-50 font-medium'
@@ -69,6 +96,13 @@ export default function SettingsPage() {
 
         {/* --- RIGHT CONTENT AREA --- */}
         <div className="flex-1 min-w-0 pb-16">
+          <input 
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/png, image/jpeg, image/gif"
+            className="hidden"
+          />
           <AnimatePresence mode="wait">
             
             {/* ACCOUNT TAB */}
@@ -88,21 +122,43 @@ export default function SettingsPage() {
                   <form onSubmit={handleProfileSave} className="space-y-8">
                     {/* Avatar Section */}
                     <div className="flex items-center gap-6">
-                      <div className="relative group cursor-pointer">
-                        <div className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-purple-100 dark:bg-purple-500/10 border-2 border-purple-200 dark:border-purple-500/20 flex items-center justify-center overflow-hidden transition-all group-hover:border-purple-400 dark:group-hover:border-purple-500/50">
-                          <span className="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400">
-                            {profileData.firstName[0]}{profileData.lastName[0]}
-                          </span>
-                          <div className="absolute inset-0 bg-black/40 dark:bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                      <div 
+                        onClick={handleTriggerUpload} 
+                        className="relative group cursor-pointer shrink-0"
+                      >
+                        <div className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-purple-100 dark:bg-purple-500/10 border-2 border-purple-200 dark:border-purple-500/20 flex items-center justify-center overflow-hidden transition-all group-hover:border-purple-400 dark:group-hover:border-purple-500/50 relative">
+                          
+                          {/* DYNAMIC IMAGE ELEMENT HOOK */}
+                          {imagePreview ? (
+                            <img 
+                              src={imagePreview} 
+                              alt="Profile Avatar Preview" 
+                              className="w-full h-full object-cover absolute inset-0 z-10"
+                            />
+                          ) : (
+                            <span className="text-2xl md:text-3xl font-bold text-purple-600 dark:text-purple-400 relative z-0">
+                              {profileData.firstName?.[0] || ''}{profileData.lastName?.[0] || ''}
+                            </span>
+                          )}
+
+                          {/* OVERLAY MICRO-INTERACTION BUTTON CONTAINER */}
+                          <div className="absolute inset-0 bg-black/40 dark:bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs z-20">
                             <Camera className="w-5 h-5 md:w-6 md:h-6 text-white" />
                           </div>
                         </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-zinc-900 dark:text-zinc-50">Profile Picture</h4>
-                        <p className="text-xs md:text-sm text-zinc-500 mb-3">JPG, GIF or PNG. 1MB max.</p>
-                        <Button type="button" variant="outline" size="sm" className="bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 dark:hover:text-white h-8">
-                          Upload new
+
+                      <div className="space-y-1.5">
+                        <h4 className="font-semibold text-sm sm:text-base text-zinc-900 dark:text-zinc-50">Profile Picture Image</h4>
+                        <p className="text-xs text-zinc-500">JPG, GIF or PNG. 1MB max payload constraints.</p>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={handleTriggerUpload}
+                          size="sm" 
+                          className="bg-zinc-50 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/10 dark:hover:text-white h-8 text-xs rounded-xl"
+                        >
+                          Upload new picture
                         </Button>
                       </div>
                     </div>
@@ -110,34 +166,35 @@ export default function SettingsPage() {
                     {/* Form Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">First name</label>
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">First name</label>
                         <Input 
                           value={profileData.firstName}
                           onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
-                          className="bg-zinc-50 dark:bg-black/50 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 h-11"
+                          className="bg-zinc-50 dark:bg-black/50 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 h-11 rounded-xl"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Last name</label>
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Last name</label>
                         <Input 
                           value={profileData.lastName}
                           onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
-                          className="bg-zinc-50 dark:bg-black/50 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 h-11"
+                          className="bg-zinc-50 dark:bg-black/50 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 h-11 rounded-xl"
                         />
                       </div>
                       <div className="space-y-2 md:col-span-2">
-                        <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Email address</label>
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Email address</label>
                         <Input 
                           type="email"
                           value={profileData.email}
                           onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                          className="bg-zinc-50 dark:bg-black/50 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 h-11"
+                          className="bg-zinc-50 dark:bg-black/50 border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 h-11 rounded-xl"
                         />
                       </div>
                     </div>
 
+                    {/* ACTIONS CONTROLLER LAYER */}
                     <div className="flex justify-end pt-6 border-t border-zinc-200 dark:border-white/5">
-                      <Button type="submit" disabled={isSaving} className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-[#09090b] hover:bg-zinc-800 dark:hover:bg-zinc-200 gap-2 font-semibold h-10 px-6 rounded-lg">
+                      <Button type="submit" disabled={isSaving} className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-[#09090b] hover:bg-zinc-800 dark:hover:bg-zinc-200 gap-2 font-semibold h-10 px-6 rounded-xl text-sm transition-opacity disabled:opacity-50 shadow-sm">
                         {isSaving ? <><Loader2 className="w-4 h-4 animate-spin"/> Saving...</> : <><Save className="w-4 h-4"/> Save Changes</>}
                       </Button>
                     </div>
@@ -152,7 +209,7 @@ export default function SettingsPage() {
                   </div>
                   <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-6">Log out of your active session on this device. You will need to sign back in.</p>
                   <div className="w-fit">
-                     <LogoutButton />
+                    <LogoutButton />
                   </div>
                 </div>
               </motion.div>
@@ -173,6 +230,7 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Light Mode Button */}
                     <button 
+                      type="button"
                       onClick={() => isDarkMode && dispatch(toggleDarkMode())}
                       className={`relative flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all duration-300 group ${
                         !isDarkMode ? 'border-blue-500 bg-blue-50' : 'border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-black/20 hover:border-zinc-300 dark:hover:border-white/20'
@@ -191,6 +249,7 @@ export default function SettingsPage() {
 
                     {/* Dark Mode Button */}
                     <button 
+                      type="button"
                       onClick={() => !isDarkMode && dispatch(toggleDarkMode())}
                       className={`relative flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all duration-300 group ${
                         isDarkMode ? 'border-blue-500 bg-blue-500/5' : 'border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-black/20 hover:border-zinc-300 dark:hover:border-white/20'
