@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleSidebar } from '../../app/store/uiSlice';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
   Settings, 
   Menu, 
   Sparkles,
   X,
-  GraduationCap
+  GraduationCap,
+  User,
+  LogOut,
+  AlertTriangle
 } from 'lucide-react';
 
 const NAVIGATION_ITEMS = [
@@ -19,11 +23,17 @@ const NAVIGATION_ITEMS = [
 
 export function AppLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   
   const isSidebarOpen = useSelector((state) => state.ui.isSidebarOpen);
   const isDarkMode = useSelector((state) => state.ui.isDarkMode);
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Controls Account/Logout Menu
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // Controls Custom Alert Dialog Modal
+  
+  const profileMenuRef = useRef(null);
 
   // Sync dark mode class with html element
   useEffect(() => {
@@ -34,6 +44,22 @@ export function AppLayout() {
       root.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  // Click outside listener to safely close the user context menu popover
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const executeFinalLogoutSequence = () => {
+    setIsLoggingOut(false);
+    navigate('/');
+  };
 
   return (
     <div className={`flex h-[100dvh] w-full overflow-hidden transition-colors duration-300 ${
@@ -67,13 +93,12 @@ export function AppLayout() {
           isDarkMode ? 'border-white/5' : 'border-zinc-200'
         }`}>
           
-          {/* FIX 1: Logo content wraps inside an Animate Presence check condition */}
           {isSidebarOpen ? (
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/20">
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
-              <span className={`font-bold text-lg tracking-tight text-zinc-900 dark:text-zinc-50`}>
+              <span className="font-bold text-lg tracking-tight text-zinc-900 dark:text-zinc-50">
                 Note AI
               </span>
             </div>
@@ -122,22 +147,74 @@ export function AppLayout() {
                 <span className={`whitespace-nowrap transition-all duration-200 ${!isSidebarOpen ? 'hidden' : 'opacity-100'}`}>
                   {item.name}
                 </span>
-                
-                {/* FIX 2: Completely removed the absolute-positioned text box popup wrapper from here */}
               </Link>
             );
           })}
         </nav>
 
-        {/* Mini User Profile Footer */}
-        <div className={`p-3 border-t shrink-0 ${
+        {/* Mini User Profile Footer Container with Popover Context Anchors */}
+        <div ref={profileMenuRef} className={`p-3 border-t shrink-0 relative ${
           isSidebarOpen ? '' : 'flex justify-center px-0'
         } ${
           isDarkMode ? 'border-white/5 bg-[#0a0a0c]' : 'border-zinc-200 bg-zinc-50'
         }`}>
-          <div className={`flex items-center rounded-xl transition-colors ${
-            isSidebarOpen ? 'gap-3 p-2 hover:bg-white/5 cursor-pointer' : 'p-0'
-          }`}>
+          
+          {/* USER MENU CONTEXT POPOVER PANEL */}
+          <AnimatePresence>
+            {isProfileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className={`absolute z-50 left-3 right-3 bottom-[calc(100%-4px)] mb-2 p-1.5 rounded-xl border shadow-xl backdrop-blur-xl flex flex-col gap-0.5 ${
+                  !isSidebarOpen && 'left-auto right-auto w-40'
+                } ${
+                  isDarkMode 
+                    ? 'bg-[#121215]/95 border-zinc-800/80 text-zinc-200' 
+                    : 'bg-white/95 border-zinc-200 text-zinc-700'
+                }`}
+              >
+                {/* Account Direct Link - Updated with Query Parameter routing hook */}
+                <Link
+                  to="/dashboard/settings?tab=account"
+                  onClick={() => setIsProfileMenuOpen(false)}
+                  className={`flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    isDarkMode ? 'hover:bg-white/5 hover:text-zinc-50' : 'hover:bg-zinc-100 hover:text-zinc-900'
+                  }`}
+                >
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span>Account</span>
+                </Link>
+
+                {/* Separator Line */}
+                <div className={`h-px my-1 ${isDarkMode ? 'bg-zinc-800/60' : 'bg-zinc-200/60'}`} />
+
+                {/* Logout Prompt Interceptor */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileMenuOpen(false);
+                    setIsLoggingOut(true);
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg text-red-600 dark:text-red-400 transition-colors text-left ${
+                    isDarkMode ? 'hover:bg-red-500/10' : 'hover:bg-red-50'
+                  }`}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Logout</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* PROFILE BUTTON INTERACTION CORE */}
+          <div 
+            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+            className={`flex items-center rounded-xl transition-colors select-none ${
+              isSidebarOpen ? 'gap-3 p-2 hover:bg-zinc-200/50 dark:hover:bg-white/5 cursor-pointer' : 'cursor-pointer hover:opacity-80'
+            }`}
+          >
             <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 ${
               isDarkMode ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' : 'bg-purple-100 border-purple-200 text-purple-600'
             }`}>
@@ -168,6 +245,78 @@ export function AppLayout() {
           </div>
         </main>
       </div>
+
+      {/* PREMIUM APP LOGOUT PORTAL OVERLAY DIALOG */}
+      <AnimatePresence>
+        {isLoggingOut && (
+          <div className="fixed inset-0 declare-modal-frame z-[100] flex items-center justify-center p-4">
+            
+            {/* Blurry Dimmer Layer */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsLoggingOut(false)}
+              className="absolute inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Dialog Content Panel */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              className={`relative w-full max-w-md border rounded-2xl p-6 shadow-2xl z-10 flex flex-col space-y-6 ${
+                isDarkMode ? 'border-zinc-800 bg-zinc-900 text-zinc-100' : 'border-zinc-200 bg-white text-zinc-900'
+              }`}
+            >
+              <button 
+                onClick={() => setIsLoggingOut(false)}
+                className={`absolute top-4 right-4 p-1.5 rounded-lg transition-colors focus:outline-none ${
+                  isDarkMode ? 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800' : 'text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="flex gap-4 items-start">
+                <div className="p-3 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-red-600 dark:text-red-400 shrink-0">
+                  <LogOut className="w-6 h-6" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="text-xl font-bold tracking-tight">Signing Out?</h3>
+                  <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                    You are about to terminate your local secure session matrix. Unsaved pipeline inputs might turn invalid.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 justify-end w-full pt-2">
+                <button 
+                  type="button"
+                  onClick={() => setIsLoggingOut(false)}
+                  className={`h-10 px-4 rounded-xl text-sm font-medium border transition-colors ${
+                    isDarkMode 
+                      ? 'border-zinc-800 text-zinc-300 bg-zinc-900 hover:bg-zinc-800' 
+                      : 'border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={executeFinalLogoutSequence}
+                  className="h-10 bg-red-600 hover:bg-red-700 dark:bg-red-500 text-white font-semibold px-4 rounded-xl text-sm shadow-md transition-transform active:scale-[0.98]"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </motion.div>
+
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

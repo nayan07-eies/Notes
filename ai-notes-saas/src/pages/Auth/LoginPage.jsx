@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const isDarkMode = useSelector((state) => state.ui?.isDarkMode || false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = (e) => {
@@ -15,106 +17,134 @@ export default function LoginPage() {
     setTimeout(() => {
       setIsLoading(false);
       navigate('/dashboard/study');
-    }, 2000);
+    }, 1800);
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="space-y-6 w-full"
-    >
-      {/* 1. Explicitly set text-zinc-50 for headers and text-zinc-400 for subtext */}
-      <div className="space-y-2 text-center lg:text-left">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-50">Welcome back</h1>
-        <p className="text-sm text-zinc-400">
-          Enter your credentials to access your workspace.
-        </p>
-      </div>
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col relative overflow-hidden font-sans selection:bg-primary/20 transition-colors duration-300">
+      
+      {/* Whole-Page Adaptive Radial Glow Effects */}
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[50rem] h-[50rem] rounded-full bg-primary/10 dark:bg-primary/5 blur-[128px] pointer-events-none transition-all duration-300" />
+      <div className="absolute bottom-[10%] right-[-10%] w-[45rem] h-[45rem] rounded-full bg-purple-500/10 dark:bg-purple-500/5 blur-[128px] pointer-events-none transition-all duration-300" />
 
-      <form onSubmit={handleLogin} className="space-y-4">
-        {/* Email Field */}
-        <div className="space-y-2">
-          {/* Explicit label color */}
-          <label htmlFor="email" className="text-sm font-medium text-zinc-50">Email Address</label>
-          <div className="relative group">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors group-focus-within:text-blue-400" />
-            {/* Forced input background, border, and text colors to override shadcn defaults */}
-            <Input 
-              id="email" 
-              type="email" 
-              placeholder="name@company.com" 
-              className="pl-9 bg-[#09090b] border-white/10 text-zinc-50 placeholder:text-zinc-600 transition-all duration-300 focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50" 
-              required 
-              disabled={isLoading} 
-            />
-          </div>
-        </div>
-
-        {/* Password Field */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            {/* Explicit label color */}
-            <label htmlFor="password" className="text-sm font-medium text-zinc-50">Password</label>
-            <Link to="/forgot-password" className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors">
-              Forgot password?
-            </Link>
-          </div>
-          
-          <div className="relative group">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors group-focus-within:text-blue-400" />
-            {/* Forced input background, border, and text colors */}
-            <Input 
-              id="password" 
-              type="password" 
-              placeholder="••••••••"
-              className="pl-9 bg-[#09090b] border-white/10 text-zinc-50 placeholder:text-zinc-600 transition-all duration-300 focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50" 
-              required 
-              disabled={isLoading} 
-            />
-          </div>
-        </div>
-
-        {/* High Contrast Submit Button */}
-        <Button 
-          type="submit" 
-          className="w-full transition-all duration-300 bg-zinc-50 text-[#09090b] hover:bg-zinc-200 mt-2 font-semibold" 
-          disabled={isLoading}
+      {/* Main Responsive Layout Wrapper */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-12 lg:py-20 z-10">
+        
+        {/* Animated Login Form Box */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-md"
         >
-          <AnimatePresence mode="wait">
-            {isLoading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center"
-              >
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-zinc-500" />
-                Authenticating...
-              </motion.div>
-            ) : (
-              <motion.span
-                key="label"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                Sign In
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </Button>
-      </form>
+          {/* Universal Theme-Adaptive Premium Glass Card */}
+          <div className="relative group rounded-2xl border border-border bg-card/60 dark:bg-card/40 backdrop-blur-xl p-6 sm:p-8 shadow-2xl dark:shadow-black/40 transition-all duration-300 hover:border-primary/20">
+            
+            {/* Ambient Accent Header Border Highlight */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent rounded-full" />
 
-      {/* Footer Text */}
-      <div className="text-center text-sm text-zinc-400 mt-6">
-        Don't have an account?{' '}
-        <Link to="/signup" className="text-zinc-50 hover:underline font-medium">
-          Create an account
-        </Link>
-      </div>
-    </motion.div>
+            <div className="space-y-6">
+              {/* Header Titles */}
+              <div className="space-y-1.5 text-center">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                  Welcome back
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Enter your credentials to access your local workspace.
+                </p>
+              </div>
+
+              {/* Form Matrix */}
+              <form onSubmit={handleLogin} className="space-y-4">
+                
+                {/* Email Input Field */}
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Email Address
+                  </label>
+                  <div className="relative group/field">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/80 group-focus-within/field:text-primary transition-colors duration-200" />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      autoComplete="email"
+                      aria-label="Email Address"
+                      placeholder="name@company.com" 
+                      className="pl-9 bg-background/50 dark:bg-background/40 border-input text-foreground transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary" 
+                      required 
+                      disabled={isLoading} 
+                    />
+                  </div>
+                </div>
+                
+                {/* Password Input Field */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Password
+                    </label>
+                    <Link to="/forgot-password" className="text-xs text-primary hover:text-primary/80 hover:underline font-semibold transition-colors">
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="relative group/field">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/80 group-focus-within/field:text-primary transition-colors duration-200" />
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      autoComplete="current-password"
+                      aria-label="Password"
+                      placeholder="••••••••"
+                      className="pl-9 pr-10 bg-background/50 dark:bg-background/40 border-input text-foreground transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary" 
+                      required 
+                      disabled={isLoading} 
+                    />
+                  </div>
+                </div>
+
+                {/* Submit Action Button */}
+                <Button 
+                  type="submit" 
+                  className="w-full relative overflow-hidden font-semibold mt-2 shadow-lg shadow-primary/20 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 active:scale-[0.98]" 
+                  disabled={isLoading}
+                >
+                  <AnimatePresence mode="wait">
+                    {isLoading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Authenticating Identity...
+                      </motion.div>
+                    ) : (
+                      <motion.span
+                        key="label"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        Sign In to Workspace
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </form>
+
+              {/* Account Redirection Link */}
+              <div className="text-center text-sm text-muted-foreground border-t border-border pt-4 mt-2">
+                Don't have an account?{' '}
+                <Link to="/signup" className="text-primary hover:text-primary/80 hover:underline font-semibold transition-colors ml-0.5">
+                  Create an account
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </main>
+    </div>
   );
 }

@@ -1,11 +1,38 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom'; // Added useSearchParams hook
 import { toggleDarkMode } from '@/app/store/uiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Bell, Shield, Palette, Moon, Sun, Check, AlertTriangle, Camera, Save, Loader2 } from 'lucide-react';
-import { LogoutButton } from '@/features/auth/LogoutButton';
+import { 
+  User, 
+  Bell, 
+  Shield, 
+  Palette, 
+  Moon, 
+  Sun, 
+  Check, 
+  AlertTriangle, 
+  Camera, 
+  Save, 
+  Loader2, 
+  LogOut, 
+  X 
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+
+function CreativeLogoutButton({ onTriggerLogout }) {
+  return (
+    <Button 
+      type="button" 
+      onClick={onTriggerLogout}
+      className="bg-red-600 hover:bg-red-700 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-white dark:text-red-400 gap-2 font-semibold h-10 px-5 rounded-xl text-sm transition-all shadow-sm border border-transparent dark:border-red-500/20 active:scale-[0.98]"
+    >
+      <LogOut className="w-4 h-4" />
+      Sign Out
+    </Button>
+  );
+}
 
 const TABS = [
   { id: 'account', label: 'Account', icon: User },
@@ -16,29 +43,46 @@ const TABS = [
 
 export default function SettingsPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); 
+  const [searchParams, setSearchParams] = useSearchParams(); // Initialized parameters manager
+  
+  const tabParam = searchParams.get('tab'); // Read target tab data from URL pipeline string
   const isDarkMode = useSelector((state) => state.ui.isDarkMode);
   
-  const [activeTab, setActiveTab] = useState('account');
+  // Set initial state fallback based strictly on URL values if available
+  const [activeTab, setActiveTab] = useState(tabParam || 'account');
   const [isSaving, setIsSaving] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null); // Holds the uploaded image URL string
+  const [isLoggingOut, setIsLoggingOut] = useState(false); 
+  const [imagePreview, setImagePreview] = useState(null); 
   const fileInputRef = useRef(null);
+  
   const [profileData, setProfileData] = useState({
     firstName: 'Nayan',
     lastName: 'Tarpara',
     email: 'nayan.tarpra@example.com'
   });
 
-  // Triggers hidden native operating system file explorer prompt window
+  // Watch for parameter adjustments to swap active view layouts instantly
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  // Synchronizes internal visibility parameters cleanly with the global active URL structure
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setSearchParams({ tab: tabId });
+  };
+
   const handleTriggerUpload = () => {
     fileInputRef.current?.click();
   };
 
-  // Converts raw file binary arrays into client memory URL parameters for instant preview tracking
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate size (1MB max constraint parameters matching layout limits)
     if (file.size > 1024 * 1024) {
       alert("File size exceeds 1MB limitation constraint.");
       return;
@@ -60,8 +104,13 @@ export default function SettingsPage() {
     }, 1500);
   };
 
+  const executeFinalLogoutSequence = () => {
+    setIsLoggingOut(false);
+    navigate('/');
+  };
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 md:p-8 space-y-8">
+    <div className="w-full max-w-6xl mx-auto p-4 md:p-8 space-y-8 relative">
       
       {/* HEADER */}
       <div className="border-b border-zinc-200 dark:border-white/5 pb-6">
@@ -80,7 +129,7 @@ export default function SettingsPage() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)} // Pointed directly to parameterized handler
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-left ${
                   isActive 
                     ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold' 
@@ -127,8 +176,6 @@ export default function SettingsPage() {
                         className="relative group cursor-pointer shrink-0"
                       >
                         <div className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-purple-100 dark:bg-purple-500/10 border-2 border-purple-200 dark:border-purple-500/20 flex items-center justify-center overflow-hidden transition-all group-hover:border-purple-400 dark:group-hover:border-purple-500/50 relative">
-                          
-                          {/* DYNAMIC IMAGE ELEMENT HOOK */}
                           {imagePreview ? (
                             <img 
                               src={imagePreview} 
@@ -140,8 +187,6 @@ export default function SettingsPage() {
                               {profileData.firstName?.[0] || ''}{profileData.lastName?.[0] || ''}
                             </span>
                           )}
-
-                          {/* OVERLAY MICRO-INTERACTION BUTTON CONTAINER */}
                           <div className="absolute inset-0 bg-black/40 dark:bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs z-20">
                             <Camera className="w-5 h-5 md:w-6 md:h-6 text-white" />
                           </div>
@@ -192,7 +237,6 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    {/* ACTIONS CONTROLLER LAYER */}
                     <div className="flex justify-end pt-6 border-t border-zinc-200 dark:border-white/5">
                       <Button type="submit" disabled={isSaving} className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-[#09090b] hover:bg-zinc-800 dark:hover:bg-zinc-200 gap-2 font-semibold h-10 px-6 rounded-xl text-sm transition-opacity disabled:opacity-50 shadow-sm">
                         {isSaving ? <><Loader2 className="w-4 h-4 animate-spin"/> Saving...</> : <><Save className="w-4 h-4"/> Save Changes</>}
@@ -209,7 +253,7 @@ export default function SettingsPage() {
                   </div>
                   <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-6">Log out of your active session on this device. You will need to sign back in.</p>
                   <div className="w-fit">
-                    <LogoutButton />
+                    <CreativeLogoutButton onTriggerLogout={() => setIsLoggingOut(true)} />
                   </div>
                 </div>
               </motion.div>
@@ -228,7 +272,6 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Light Mode Button */}
                     <button 
                       type="button"
                       onClick={() => isDarkMode && dispatch(toggleDarkMode())}
@@ -247,7 +290,6 @@ export default function SettingsPage() {
                       )}
                     </button>
 
-                    {/* Dark Mode Button */}
                     <button 
                       type="button"
                       onClick={() => !isDarkMode && dispatch(toggleDarkMode())}
@@ -290,6 +332,71 @@ export default function SettingsPage() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* --- PREMIUM PORTAL INTERCEPT OVERLAY MODAL --- */}
+      <AnimatePresence>
+        {isLoggingOut && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            
+            {/* Blurry Dimmer Backdrop Layer */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsLoggingOut(false)}
+              className="absolute inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Premium Dialog Surface */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              className="relative w-full max-w-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-2xl z-10 flex flex-col space-y-6"
+            >
+              <button 
+                onClick={() => setIsLoggingOut(false)}
+                className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="flex gap-4 items-start">
+                <div className="p-3 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-red-600 dark:text-red-400 shrink-0">
+                  <LogOut className="w-6 h-6" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                    Signing Out?
+                  </h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                    You are about to terminate your local secure session matrix. Unsaved pipeline inputs might turn invalid.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 justify-end w-full pt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsLoggingOut(false)}
+                  className="h-10 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-medium px-4 rounded-xl text-sm"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={executeFinalLogoutSequence}
+                  className="h-10 bg-red-600 hover:bg-red-700 dark:bg-red-500 text-white font-semibold px-4 rounded-xl text-sm shadow-md shadow-red-500/10 active:scale-[0.98]"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            </motion.div>
+
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
