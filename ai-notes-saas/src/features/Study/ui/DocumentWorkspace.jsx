@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import FlashcardModule from './FlashcardModule'; 
 import QuizModule from './QuizModule';
+import MindmapModule from './MindMapModule';
+import TutorChatModule from './TutorChatModule';
 
-// --- SAFE STANDBY FALLBACKS ---
-const MindmapModule = () => <div className="p-8 text-center text-zinc-500 font-medium">Mind Map Engine Standby</div>;
-const TutorChatModule = () => <div className="p-8 text-center text-zinc-500 font-medium">AI Tutor Chat Standby</div>;
+// // --- SAFE STANDBY FALLBACKS ---
+// const MindmapModule = () => <div className="p-8 text-center text-zinc-500 font-medium">Mind Map Engine Standby</div>;
+// const TutorChatModule = () => <div className="p-8 text-center text-zinc-500 font-medium">AI Tutor Chat Standby</div>;
 
 import { 
   UploadCloud, 
@@ -490,7 +492,7 @@ export function DocumentWorkspace() {
                       <div className="ml-auto pl-2 border-l border-zinc-200 dark:border-zinc-800 shrink-0 hidden sm:block">
                         <button onClick={handleCopyRawText} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all rounded-md text-xs font-semibold text-white shadow-md">
                           {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                          <span>{isCopied ? 'Copied!' : 'Copy Data'}</span>
+                          <span>{isCopied ? 'Copied' : 'Copy'}</span>
                         </button>
                       </div>
                     </div>
