@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Added useSearchParams hook
 import { toggleDarkMode } from '@/app/store/uiSlice';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from "sonner";
 import { 
   User, 
   Bell, 
@@ -95,14 +96,22 @@ export default function SettingsPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleProfileSave = (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      alert("Profile configurations saved successfully!");
-    }, 1500);
-  };
+  const handleProfileSave = async (e) => {
+  e.preventDefault();
+  setIsSaving(true);
+
+  // In the future phase, replace this setTimeout with your real database update:
+  // await api.put('/users/me', profileData);
+
+  setTimeout(() => {
+    setIsSaving(false);
+    
+    // PREMIUM UI ENHANCEMENT: Replaced raw alert() with a non-blocking modern toast notification
+    toast.success("Profile updated", {
+      description: "Your user workspace configurations have been saved successfully.",
+    });
+  }, 1500);
+};
 
   const executeFinalLogoutSequence = () => {
     setIsLoggingOut(false);

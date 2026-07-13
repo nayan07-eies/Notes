@@ -27,7 +27,7 @@ const statCards = [
   { title: "Total Documents", value: "45", icon: FileText, desc: "+20% from last month", trend: "emerald-500", showArrow: true },
   { title: "AI Insights Generated", value: "31", icon: Sparkles, iconColor: "text-primary", desc: "+12% from last month", trend: "emerald-500", showArrow: true },
   { title: "Storage Used", value: "142 MB", icon: HardDrive, desc: "2.1 GB remaining in plan", trend: "muted-foreground", showArrow: false },
-  { title: "System Status", value: "Healthy", valueColor: "text-emerald-500", icon: Activity, desc: "All AI processing nodes online", trend: "muted-foreground", showArrow: false },
+  { title: "Today Token Remiand", value: "Healthy", valueColor: "text-emerald-500", icon: Activity, desc: "50 Token Remiand", trend: "muted-foreground", showArrow: false },
 ];
 
 const activities = [
