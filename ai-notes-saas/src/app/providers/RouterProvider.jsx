@@ -8,12 +8,18 @@ import SignupPage from '../../pages/Auth/SignupPage';
 import HomePage from '../../pages/HomePage';
 import ForgotPasswordPage from '../../pages/Auth/ForgotPasswordPage';
 import StudyPage from '@/pages/StudyPage';
+import AdminPanel from '@/pages/Adminpanel';
 
 const router = createBrowserRouter([
   // THE NEW HOME/LANDING PAGE
   {
     path: "/",
     element: <HomePage />,
+  },
+  {
+    path: "/admin",
+    element: <AdminPanel/>
+
   },
   // Authentication Routes
   {

@@ -288,6 +288,24 @@ export function DocumentWorkspace() {
             )}
           </div>
         </header>
+        {/* --- REAL-TIME SYSTEM BROADCAST BANNER --- */}
+{localStorage.getItem('global_system_announcement') && (
+  <div className="w-full bg-blue-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-md select-none">
+    <div className="flex items-center gap-2 truncate">
+      <span className="bg-blue-800 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider animate-pulse">System Broadcast</span>
+      <span className="truncate">{localStorage.getItem('global_system_announcement')}</span>
+    </div>
+    <button 
+      onClick={() => {
+        localStorage.removeItem('global_system_announcement');
+        window.location.reload(); // Force instant sync remove
+      }} 
+      className="hover:opacity-80 text-[10px] font-black uppercase tracking-wider ml-4 shrink-0"
+    >
+      Dismiss
+    </button>
+  </div>
+)}
 
         <main className="flex-1 relative flex overflow-hidden w-full">
           <AnimatePresence mode="wait">
