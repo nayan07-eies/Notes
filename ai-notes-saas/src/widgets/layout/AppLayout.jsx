@@ -12,7 +12,8 @@ import {
   GraduationCap,
   User,
   LogOut,
-  AlertTriangle
+  Check,
+  Zap
 } from 'lucide-react';
 
 const NAVIGATION_ITEMS = [
@@ -30,12 +31,12 @@ export function AppLayout() {
   const isDarkMode = useSelector((state) => state.ui.isDarkMode);
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // Controls Account/Logout Menu
-  const [isLoggingOut, setIsLoggingOut] = useState(false); // Controls Custom Alert Dialog Modal
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); 
+  const [isLoggingOut, setIsLoggingOut] = useState(false); 
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false); // Controls Premium Pricing Modal
   
   const profileMenuRef = useRef(null);
 
-  // Sync dark mode class with html element
   useEffect(() => {
     const root = window.document.documentElement;
     if (isDarkMode) {
@@ -45,7 +46,6 @@ export function AppLayout() {
     }
   }, [isDarkMode]);
 
-  // Click outside listener to safely close the user context menu popover
   useEffect(() => {
     function handleClickOutside(event) {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
@@ -94,24 +94,24 @@ export function AppLayout() {
         }`}>
           
           {isSidebarOpen ? (
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/20">
-                <Sparkles className="h-4 w-4 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                <img
+                  src="/ulight_logo-removebg-preview.png"
+                  alt="Note AI"
+                  className="h-10 w-10 object-contain"
+                />
               </div>
-              <span className="font-bold text-lg tracking-tight text-zinc-900 dark:text-zinc-50">
-                Note AI
-              </span>
+              <span className="font-bold text-lg tracking-tight">Note AI</span>
             </div>
           ) : null}
           
-          {/* Mobile Close Button */}
           <button className={`md:hidden p-1.5 rounded-md transition-colors ${
             isDarkMode ? 'text-zinc-400 hover:text-zinc-50 hover:bg-white/5' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
           }`} onClick={() => setIsMobileMenuOpen(false)}>
             <X className="h-5 w-5" />
           </button>
 
-          {/* Persistent Sidebar Toggle Controller */}
           <button 
             onClick={() => dispatch(toggleSidebar())} 
             className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors shrink-0 ${
@@ -127,8 +127,8 @@ export function AppLayout() {
           {NAVIGATION_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = item.path === '/dashboard' 
-                ? location.pathname === '/dashboard' 
-                : location.pathname.startsWith(item.path);
+              ? location.pathname === '/dashboard' 
+              : location.pathname.startsWith(item.path);
             
             return (
               <Link
@@ -150,16 +150,36 @@ export function AppLayout() {
               </Link>
             );
           })}
+
+          {/* SIDEBAR UPGRADE CTA ACCENT BOX */}
+          {isSidebarOpen && (
+            <div className={`mt-6 p-4 rounded-xl border relative overflow-hidden ${
+              isDarkMode ? 'bg-zinc-900/40 border-zinc-800' : 'bg-zinc-100/70 border-zinc-200'
+            }`}>
+              <div className="flex items-center gap-2 text-xs font-black text-blue-500 uppercase tracking-widest">
+                <Zap className="w-3.5 h-3.5 fill-current" /> Premium Access
+              </div>
+              <p className={`text-xs mt-1.5 leading-relaxed ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                Unlock infinite audio parses, mind map generations, and AI workspace templates.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsUpgradeOpen(true)}
+                className="w-full mt-3 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-transform active:scale-[0.98]"
+              >
+                Upgrade Plan
+              </button>
+            </div>
+          )}
         </nav>
 
-        {/* Mini User Profile Footer Container with Popover Context Anchors */}
+        {/* Profile Footer Panel */}
         <div ref={profileMenuRef} className={`p-3 border-t shrink-0 relative ${
           isSidebarOpen ? '' : 'flex justify-center px-0'
         } ${
           isDarkMode ? 'border-white/5 bg-[#0a0a0c]' : 'border-zinc-200 bg-zinc-50'
         }`}>
           
-          {/* USER MENU CONTEXT POPOVER PANEL */}
           <AnimatePresence>
             {isProfileMenuOpen && (
               <motion.div
@@ -175,7 +195,6 @@ export function AppLayout() {
                     : 'bg-white/95 border-zinc-200 text-zinc-700'
                 }`}
               >
-                {/* Account Direct Link - Updated with Query Parameter routing hook */}
                 <Link
                   to="/dashboard/settings?tab=account"
                   onClick={() => setIsProfileMenuOpen(false)}
@@ -187,10 +206,8 @@ export function AppLayout() {
                   <span>Account</span>
                 </Link>
 
-                {/* Separator Line */}
                 <div className={`h-px my-1 ${isDarkMode ? 'bg-zinc-800/60' : 'bg-zinc-200/60'}`} />
 
-                {/* Logout Prompt Interceptor */}
                 <button
                   type="button"
                   onClick={() => {
@@ -208,7 +225,6 @@ export function AppLayout() {
             )}
           </AnimatePresence>
 
-          {/* PROFILE BUTTON INTERACTION CORE */}
           <div 
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             className={`flex items-center rounded-xl transition-colors select-none ${
@@ -230,7 +246,6 @@ export function AppLayout() {
 
       {/* MAIN CONTENT WORKSPACE */}
       <div className="flex flex-1 flex-col overflow-hidden w-full relative">
-        {/* Mobile Top Header */}
         <header className="flex h-14 items-center gap-4 px-4 shrink-0 md:hidden border-b bg-white dark:bg-[#09090b] border-zinc-200 dark:border-white/5">
           <button onClick={() => setIsMobileMenuOpen(true)} className={`p-2 -ml-2 rounded-lg transition-colors ${
             isDarkMode ? 'text-zinc-400 hover:text-zinc-50 hover:bg-white/5' : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
@@ -246,12 +261,98 @@ export function AppLayout() {
         </main>
       </div>
 
-      {/* PREMIUM APP LOGOUT PORTAL OVERLAY DIALOG */}
+      {/* --- PREMIUM UPGRADE MATRIX OVERLAY OVERRIDE DIALOG MODAL --- */}
+      <AnimatePresence>
+        {isUpgradeOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsUpgradeOpen(false)}
+              className="absolute inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-md"
+            />
+
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ type: "spring", stiffness: 360, damping: 26 }}
+              className={`relative w-full max-w-3xl border rounded-3xl p-6 sm:p-8 shadow-2xl z-10 grid md:grid-cols-2 gap-6 ${
+                isDarkMode ? 'border-zinc-800 bg-[#0d0d11] text-zinc-100' : 'border-zinc-200 bg-white text-zinc-900'
+              }`}
+            >
+              <button 
+                onClick={() => setIsUpgradeOpen(false)}
+                className={`absolute top-4 right-4 p-1.5 rounded-lg transition-colors focus:outline-none z-20 ${
+                  isDarkMode ? 'text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800' : 'text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* TIER 1: CURRENT STANDBY BASE INTERFACE */}
+              <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
+                isDarkMode ? 'border-zinc-800/60 bg-zinc-900/20' : 'border-zinc-100 bg-zinc-50/50'
+              }`}>
+                <div>
+                  <div className="text-zinc-400 font-bold text-xs uppercase tracking-wider">Current Tier</div>
+                  <h4 className="text-2xl font-black tracking-tight mt-1">Free Base</h4>
+                  <p className="text-zinc-500 text-xs mt-1">Essential operational context limits.</p>
+                  
+                  <div className="text-3xl font-black tracking-tight mt-4">$0 <span className="text-xs font-bold text-zinc-500">/ mo</span></div>
+                  
+                  <div className={`h-px my-4 ${isDarkMode ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+                  <ul className="space-y-2.5 text-xs text-zinc-500 font-medium">
+                    {["3 Multi-Modal uploads / mo", "Standard OCR processing speeds", "Basic chat generation pipelines", "10 summary templates"].map((f, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <button disabled className="w-full mt-6 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 font-bold text-xs cursor-not-allowed">Active Plan</button>
+              </div>
+
+              {/* TIER 2: ADVANCED PREMIUM MATRIX (MATCHES PLATFORM MESH THEME) */}
+              <div className="p-5 rounded-2xl border border-blue-500/30 bg-blue-500/[0.02] flex flex-col justify-between relative overflow-hidden shadow-lg shadow-blue-500/[0.02]">
+                <div className="absolute top-0 right-0 bg-blue-600 text-white font-black text-[9px] px-3 py-1 uppercase rounded-bl-xl tracking-wider select-none">Popular</div>
+                <div>
+                  <div className="text-blue-500 font-black text-xs uppercase tracking-widest flex items-center gap-1">
+                    <Zap className="w-3 h-3 fill-current" /> Pro Engine
+                  </div>
+                  <h4 className="text-2xl font-black tracking-tight mt-1">Unlimited Pro</h4>
+                  <p className="text-zinc-500 text-xs mt-1">Uncapped parameters workspace routing.</p>
+                  
+                  <div className="text-3xl font-black tracking-tight mt-4">$12 <span className="text-xs font-bold text-zinc-500">/ mo</span></div>
+                  
+                  <div className="h-px my-4 bg-blue-500/10" />
+                  <ul className="space-y-2.5 text-xs text-zinc-600 dark:text-zinc-400 font-bold">
+                    {["Infinite PDF & media uploads", "Hyper-speed local OCR clusters", "Advanced dynamic Mind Maps", "Priority local model compute queue", "Dedicated local secure database memory"].map((f, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-blue-500 shrink-0" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setIsUpgradeOpen(false)}
+                  className="w-full mt-6 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs tracking-wider uppercase shadow-md shadow-blue-600/10 active:scale-[0.98] transition-transform"
+                >
+                  Activate Pro Access
+                </button>
+              </div>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* LOGOUT CONFIRMATION OVERLAY */}
       <AnimatePresence>
         {isLoggingOut && (
-          <div className="fixed inset-0 declare-modal-frame z-[100] flex items-center justify-center p-4">
-            
-            {/* Blurry Dimmer Layer */}
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -260,7 +361,6 @@ export function AppLayout() {
               className="absolute inset-0 bg-zinc-950/40 dark:bg-black/60 backdrop-blur-md"
             />
 
-            {/* Dialog Content Panel */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -286,7 +386,7 @@ export function AppLayout() {
                 <div className="space-y-1.5">
                   <h3 className="text-xl font-bold tracking-tight">Signing Out?</h3>
                   <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                    You are about to terminate your local secure session matrix. Unsaved pipeline inputs might turn invalid.
+                    You are about to terminate your secure session matrix. Unsaved inputs might turn invalid.
                   </p>
                 </div>
               </div>
@@ -312,7 +412,6 @@ export function AppLayout() {
                 </button>
               </div>
             </motion.div>
-
           </div>
         )}
       </AnimatePresence>

@@ -174,6 +174,48 @@ Current behavior:
 Backend relevance:
 - this is the most important page for AI/backend integration
 
+### 5.6 Admin Panel
+File: src/pages/Adminpanel.jsx
+
+Purpose:
+- A full-featured light-weight system console for operators and administrators to manage the live AI workspace.
+
+Current behavior (in-repo):
+- The app exposes an `/admin` route that renders a comprehensive admin dashboard at `src/pages/Adminpanel.jsx`.
+- The admin UI is mock-driven and includes the following areas (sidebar manifest):
+  - Dashboard Hub (system metrics)
+  - User Directories (user management)
+  - Upload Center (control and inspect ingestion buffers)
+  - Model Router (switch between inference engines/clusters)
+  - Neural Analytics (usage and telemetry)
+  - Ledger & Billing (quota and billing controls)
+  - Dev Console Logs (real-time log stream)
+  - System Properties (global settings)
+
+Key UI features:
+- Real-time simulated logs and an interactive terminal area.
+- Token/quota management controls and user tier toggles.
+- Model routing switcher for selecting inference engines (e.g., Ollama, Whisper, fallback routes).
+- Broadcast announcement composer stored to `localStorage` for demo purposes.
+- Quick system route palette and keyboard command centre (⌘K) to navigate admin actions.
+
+Backend relevance:
+- The admin panel expects a set of server-side admin endpoints and real-time channels to manage and observe the system. Suggested APIs:
+  - GET /admin/metrics  -> system-wide telemetry and KPI aggregates
+  - GET /admin/users -> paginated user list
+  - PUT /admin/users/:id/tier -> toggle user tier (free/pro/enterprise)
+  - POST /admin/users/:id/adjust-tokens -> add/remove token/quota balance
+  - GET /admin/uploads -> inspect upload queue/status
+  - POST /admin/uploads/flush -> flush temporary buffers
+  - GET /admin/models -> list available inference engines & health
+  - POST /admin/models/:id/route -> change active inference routing
+  - GET /admin/logs (or SSE /ws/logs) -> stream operational logs
+  - GET /admin/billing -> ledger and invoices
+  - POST /admin/announcements -> broadcast message to users (or store global announcement)
+
+Security note:
+- There is a demo admin gate in `src/pages/Auth/LoginPage.jsx` that navigates to `/admin` when the hardcoded admin credentials are entered (`admin@gmail.com` / `admin123`). In production this must be replaced with a secure role-based auth check and server-side authorization middleware.
+
 ---
 
 ## 6. Study Workspace Flow
@@ -206,6 +248,19 @@ Backend relevance:
   - POST /documents/import-youtube
   - POST /documents/process
 
+Additional ingest details (new):
+
+- Media upload modal: The app includes two modal variants for ingestion:
+  - `src/features/upload/ui/MediaUploadModal.jsx` — a general upload dialog used across the app. It supports selecting an AI processing template (standard, meeting, lecture, revision), local file upload, or a YouTube link. The modal calls a callback `onUploadSuccess(name, template)` on completion.
+  - `src/features/Study/ui/MediaUploadModal.jsx` — a study-focused modal used inside the study workspace. It simulates an upload pipeline with progress and supports drag-and-drop, YouTube extraction, and visual progress feedback.
+
+- Template parameter: Both upload modals allow selecting a `template` (string) describing the AI processing directive. The backend ingestion endpoints should accept a `template` query or body field and use it to influence extraction, tagging, and summarization behavior.
+
+- Suggested upload API contract (examples):
+  - POST /documents/upload  -- form-data: `file`, `template` -> returns document id/status
+  - POST /documents/import-youtube -- json: `{ url, template }` -> returns document id/status
+  - POST /documents/:id/process -- json: `{ template }` -> triggers processing job
+
 ### Stage 2: Processing
 UI shows a loading/processing spinner while AI work is happening.
 
@@ -227,8 +282,7 @@ Backend relevance:
 - the editor content should be saved or updated through endpoints such as:
   - PUT /documents/:id
   - POST /documents/:id/summary
-  - POST /documents/:id/derive
-
+  - POST /documents/:id/derive 
 ### Stage 4: Study
 Once the user selects a study tool, the app switches to one of these modules:
 - FlashcardModule
@@ -237,6 +291,18 @@ Once the user selects a study tool, the app switches to one of these modules:
 - TutorChatModule
 
 Each module represents a different output of AI processing.
+
+Study API (new):
+
+The study feature now includes a small mock API layer at `src/features/Study/api/studyApi.js` which exposes React Query hooks:
+
+- `useNotes()` — queries a notes list used to populate the study grid (mock GET /notes behavior).
+- `useGenerateSynthesis()` — mutation that simulates triggering AI synthesis and invalidates the notes query (mock POST /notes/generate or POST /documents/:id/generate behavior).
+
+Backend suggestion: Provide endpoints similar to:
+
+- GET /study/notes  -> list of documents/notes ready for study
+- POST /documents/:id/generate (or POST /study/generate) -> trigger generation/synthesis for a document and return job id or status
 
 ---
 

@@ -112,7 +112,12 @@ export default function HomePage() {
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             className="absolute z-20 w-32 h-32 bg-white dark:bg-[#0a0a0c] border-4 border-blue-500 dark:border-blue-400 rounded-3xl flex items-center justify-center shadow-2xl transition-colors duration-300"
           >
-            <BrainCircuit className="w-16 h-16 text-blue-500 dark:text-blue-400" />
+            {/* <BrainCircuit className="w-16 h-16 text-blue-500 dark:text-blue-400" /> */}
+            
+            <img
+            src="/ulight_logo-removebg-preview.png"
+            className="w-30 h-30 object-contain text-blue-500 dark:text-blue-400"
+            />
           </motion.div>
 
           {/* Raw Data Streams Inverting Left In */}
