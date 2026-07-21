@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Mail, Lock } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from '/Project/ai-notes-saas/frontend/src/components/ui/input';
+import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
 
 export default function LoginPage() {
   const navigate = useNavigate();

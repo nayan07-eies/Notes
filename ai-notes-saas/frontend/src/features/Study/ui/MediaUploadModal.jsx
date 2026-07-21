@@ -11,7 +11,7 @@ import {
   Sparkles,
   ArrowRight
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
 
 const TABS = [
   { id: 'local', label: 'Local File', icon: UploadCloud },

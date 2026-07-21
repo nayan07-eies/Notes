@@ -5,7 +5,7 @@ import {
   FileText, Mic, Video, BrainCircuit, Sparkles, ArrowRight, ChevronLeft,
   ChevronRight, Layers, FileQuestion, Network, Bot, Search, LayoutTemplate
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../components/ui/button';
 import Footer from '../shared/ui/Footer';
 
 const MOCK_REVIEWS = [

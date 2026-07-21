@@ -11,7 +11,7 @@ import {
   RefreshCw,
   Keyboard
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
 
 const MOCK_FLASHCARDS = [
   { id: 1, term: 'Latent Space', definition: 'A compressed, multi-dimensional representation of data where similar items are mapped closer together, foundational for AI models.' },

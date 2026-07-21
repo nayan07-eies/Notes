@@ -16,7 +16,7 @@ import {
   Check,
   Hand
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
 
 // --- SYSTEM NODES ARCHITECTURE (Adjusted coordinates to stay safe inside 100% viewport grids) ---
 const INITIAL_GRAPH_DATA = {

@@ -9,7 +9,7 @@ import {
   RefreshCcw,
   GraduationCap
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
 
 // Mock initial state for the chat
 const INITIAL_MESSAGES = [

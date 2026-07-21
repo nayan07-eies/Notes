@@ -16,10 +16,10 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    port: 5175,
     strictPort: true, // Forces Vite to fail if 5173 is in use, rather than jumping to 5174
     hmr: {
-      port: 5173,
+      port: 5175,
     },
   },
 })

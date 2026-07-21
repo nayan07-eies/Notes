@@ -9,7 +9,7 @@ import {
   ShieldCheck, Settings, ChevronRight, FileText, 
   BrainCircuit, Music, Video, Eye, Download
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../components/ui/button';//@/components/ui/button
 
 // ==========================================
 // 1. IMMUTABLE CONSTANTS & DATA MANIFESTS

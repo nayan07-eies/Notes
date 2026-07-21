@@ -1,5 +1,5 @@
 import React from 'react';
-import { DocumentWorkspace } from '@/features/Study/ui/DocumentWorkspace';
+import { DocumentWorkspace } from '../features/Study/ui/DocumentWorkspace';
 
 export default function StudyPage() {
   return (
