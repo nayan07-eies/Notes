@@ -6,7 +6,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 const TEMPLATES = [
   { id: 'standard', label: 'Standard', icon: FileText },

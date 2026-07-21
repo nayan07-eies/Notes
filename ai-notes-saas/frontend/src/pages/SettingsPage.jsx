@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Added useSearchParams hook
-import { toggleDarkMode } from '/Project/ai-notes-saas/frontend/src/app/store/uiSlice';//./app/store/uiSlice
+import { toggleDarkMode } from "@/app/store/uiSlice";//./app/store/uiSlice
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from "sonner";
 import { 
@@ -20,7 +20,7 @@ import {
   X 
 } from 'lucide-react';
 import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
+import { Button } from "@/components/ui/button";
 
 function CreativeLogoutButton({ onTriggerLogout }) {
   return (

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { logout } from "../../../src/app/store/uiSlice"; // Adjust path to your auth slice
+import { logout } from "@/app/store/uiSlice"; // Adjust path to your auth slice
 
 export function LogoutButton({ variant = "ghost", className = "" }) {
   const dispatch = useDispatch();

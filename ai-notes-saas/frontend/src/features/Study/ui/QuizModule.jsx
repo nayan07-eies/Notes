@@ -10,7 +10,7 @@ import {
   RefreshCcw,
   Keyboard
 } from 'lucide-react';
-import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
+import { Button } from "@/components/ui/button";
 const MOCK_QUIZ_DATA = [
   {
     id: 1,

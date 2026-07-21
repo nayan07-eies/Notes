@@ -7,8 +7,8 @@ import {
   Lock, 
   User 
 } from 'lucide-react';
-import { Input } from '/Project/ai-notes-saas/frontend/src/components/ui/input';
-import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function SignupPage() {
   const navigate = useNavigate();

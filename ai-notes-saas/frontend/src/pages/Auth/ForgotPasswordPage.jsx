@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
-import { Input } from '/Project/ai-notes-saas/frontend/src/components/ui/input';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Mail, ArrowLeft, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 
 export default function ForgotPasswordPage() {

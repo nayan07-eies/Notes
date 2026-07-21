@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   Bot
 } from 'lucide-react';
-import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 const MOCK_AI_RESPONSE = "This document outlines the strategic shift toward latent space UI optimizations. By removing traditional loading states and utilizing optimistic client-side rendering, the perceived latency of the application drops to zero. Key actionable items include migrating the fetching layer to React Query and implementing Framer Motion layout IDs across the core navigation systems.";
 

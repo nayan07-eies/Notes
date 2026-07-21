@@ -17,7 +17,7 @@ import {
   Minus, ChevronDown, Palette, Type, Network, PenTool, LayoutTemplate,
   Globe, Sliders, ShieldCheck, Target, SidebarClose, SidebarOpen
 } from 'lucide-react';
-import { Button } from '/Project/ai-notes-saas/frontend/src/components/ui/button';
+import { Button } from "@/components/ui/button";
 
 // --- PLACEHOLDER ENGINE STANDBY MODES FOR COMPILATION ---
 // const FlashcardModule = () => <div className="p-8 text-center text-zinc-500 font-semibold border-2 border-dashed border-zinc-200 dark:border-white/5 rounded-2xl">Flashcard Study Loop Active</div>;
