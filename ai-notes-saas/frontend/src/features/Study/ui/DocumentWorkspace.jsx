@@ -7,23 +7,14 @@ import QuizModule from './QuizModule';
 import MindmapModule from './MindMapModule';
 import TutorChatModule from './TutorChatModule';
 
-// // --- SAFE STANDBY FALLBACKS ---
-// const MindmapModule = () => <div className="p-8 text-center text-zinc-500 font-medium">Mind Map Engine Standby</div>;
-// const TutorChatModule = () => <div className="p-8 text-center text-zinc-500 font-medium">AI Tutor Chat Standby</div>;
 import { 
   UploadCloud, Video, Sparkles, Layers, FileQuestion, ArrowLeft,
   Bot, FileText, Menu, Image as ImageIcon, PanelLeftClose, PanelLeft, 
-  ChevronRight, Plus, Copy, Check, Bold, Italic, Underline, Heading2, 
+  ChevronRight, Plus, Copy, Check, Bold, Italic, Underline, 
   Minus, ChevronDown, Palette, Type, Network, PenTool, LayoutTemplate,
-  Globe, Sliders, ShieldCheck, Target, SidebarClose, SidebarOpen
+  Globe, Sliders, Target, SidebarClose, SidebarOpen, Wand2, X
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-
-// --- PLACEHOLDER ENGINE STANDBY MODES FOR COMPILATION ---
-// const FlashcardModule = () => <div className="p-8 text-center text-zinc-500 font-semibold border-2 border-dashed border-zinc-200 dark:border-white/5 rounded-2xl">Flashcard Study Loop Active</div>;
-// const QuizModule = () => <div className="p-8 text-center text-zinc-500 font-semibold border-2 border-dashed border-zinc-200 dark:border-white/5 rounded-2xl">Interactive Evaluation Matrix Active</div>;
-// const MindmapModule = () => <div className="p-8 text-center text-zinc-500 font-semibold border-2 border-dashed border-zinc-200 dark:border-white/5 rounded-2xl">Concept Vector Coordinates Active</div>;
-// const TutorChatModule = () => <div className="p-8 text-center text-zinc-500 font-semibold border-2 border-dashed border-zinc-200 dark:border-white/5 rounded-2xl">AI Sandbox Context Terminal Active</div>;
 
 const MOCK_SIDEBAR_NOTES = [
   { id: '1', title: 'React 19 Compiler Notes', date: '2h ago' },
@@ -52,8 +43,8 @@ This note covers the foundational elements of **Node.js** derived from the *Node
 export function DocumentWorkspace() {
   const isDarkMode = useSelector((state) => state.ui?.isDarkMode || false);
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false); // Default to false for clean canvas
   const [isMobileToolboxOpen, setIsMobileToolboxOpen] = useState(false);
   const [pipelineState, setPipelineState] = useState('ingest'); 
   const [fontSize, setFontSize] = useState(15);
@@ -63,7 +54,6 @@ export function DocumentWorkspace() {
   // Advanced Optimization States
   const [targetLang, setTargetLang] = useState('en');
   const [contentLength, setContentLength] = useState('balanced');
-  const [dataQuality, setDataQuality] = useState('standard');
   const [focusTheme, setFocusTheme] = useState('academic');
 
   // Toggles
@@ -88,7 +78,11 @@ export function DocumentWorkspace() {
       if (colorMenuRef.current && !colorMenuRef.current.contains(event.target)) setShowColorMenu(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   const execEditorCommand = (command, value = null) => {
@@ -158,7 +152,7 @@ export function DocumentWorkspace() {
     setDocumentContent('');
     setMediaUrl('');
     setPipelineState('ingest');
-    setIsSidebarOpen(true);
+    setIsSidebarOpen(false);
   };
 
   const ToolboxContent = () => (
@@ -170,19 +164,19 @@ export function DocumentWorkspace() {
             <Layers className="w-4 h-4 text-blue-500" />
             <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">Flashcards</span>
           </button>
-          <button onClick={() => handleGenerateDerivatives('quiz')} className="flex flex-col items-center justify-center p-3.5 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5  hover:bg-purple-50 hover:border-purple-500/30 dark:hover:bg-purple-500/5 transition-all">
+          <button onClick={() => handleGenerateDerivatives('quiz')} className="flex flex-col items-center justify-center p-3.5 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 hover:bg-purple-50 hover:border-purple-500/30 dark:hover:bg-purple-500/5 transition-all">
             <FileQuestion className="w-4 h-4 text-purple-500" />
             <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">Quizzes</span>
           </button>
-          <button onClick={() => handleGenerateDerivatives('mindmap')} className="flex flex-col items-center justify-center p-3.5 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 hover:bg-emerald-50  hover:border-emerald-500/30 dark:hover:bg-emerald-500/5 transition-all">
+          <button onClick={() => handleGenerateDerivatives('mindmap')} className="flex flex-col items-center justify-center p-3.5 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 hover:bg-emerald-50 hover:border-emerald-500/30 dark:hover:bg-emerald-500/5 transition-all">
             <Network className="w-4 h-4 text-emerald-500" />
             <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">Mind Map</span>
           </button>
-          <button onClick={() => handleGenerateDerivatives('practice-paper')} className="flex flex-col items-center justify-center p-3.5 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5  hover:bg-orange-50 hover:border-orange-500/30 dark:hover:bg-orange-500/5 transition-all">
+          <button onClick={() => handleGenerateDerivatives('practice-paper')} className="flex flex-col items-center justify-center p-3.5 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 hover:bg-orange-50 hover:border-orange-500/30 dark:hover:bg-orange-500/5 transition-all">
             <PenTool className="w-4 h-4 text-orange-500" />
             <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">Practice</span>
           </button>
-          <button onClick={() => handleGenerateDerivatives('tutor')} className="flex items-center justify-center p-3 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5  hover:bg-blue-50 hover:border-indigo-500/30 dark:hover:bg-indigo-500/5 transition-all col-span-2 w-full">
+          <button onClick={() => handleGenerateDerivatives('tutor')} className="flex items-center justify-center p-3 gap-2 rounded-xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-200 dark:border-white/5 hover:bg-blue-50 hover:border-indigo-500/30 dark:hover:bg-indigo-500/5 transition-all col-span-2 w-full">
             <Bot className="w-4 h-4 text-indigo-500" />
             <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300">AI Tutor Q&A</span>
           </button>
@@ -212,7 +206,7 @@ export function DocumentWorkspace() {
   return (
     <div className="flex h-screen w-full bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-50 overflow-hidden relative font-sans antialiased transition-colors duration-300">
       
-      {/* --- SIDEBAR --- */}
+      {/* DESKTOP LEFT SIDEBAR */}
       <div 
         className="hidden lg:flex flex-col border-r border-zinc-200 dark:border-white/5 bg-white dark:bg-[#0a0a0c] shrink-0 overflow-hidden transition-all duration-300"
         style={{ width: isSidebarOpen ? '260px' : '0px', borderRightWidth: isSidebarOpen ? '1px' : '0px' }}
@@ -244,7 +238,7 @@ export function DocumentWorkspace() {
         </div>
       </div>
 
-      {/* --- MAIN CANVAS ENGINE --- */}
+      {/* MAIN CANVAS */}
       <div className="flex-1 flex flex-col relative min-w-0 h-full w-full">
         
         <header className="flex items-center justify-between px-4 h-14 border-b shrink-0 z-20 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md border-zinc-200 dark:border-white/5">
@@ -272,9 +266,9 @@ export function DocumentWorkspace() {
           <div className="flex items-center gap-1.5">
             {pipelineState === 'editor' && (
               <Button 
-                variant="ghost" 
-                size="icon" 
                 onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)} 
+                variant="ghost"
+                size="icon"
                 className="hidden lg:flex text-zinc-500 h-8 w-8 hover:bg-zinc-100 dark:hover:bg-white/5"
                 title={isRightSidebarOpen ? "Collapse Tools" : "Expand Tools"}
               >
@@ -288,24 +282,25 @@ export function DocumentWorkspace() {
             )}
           </div>
         </header>
-        {/* --- REAL-TIME SYSTEM BROADCAST BANNER --- */}
-{localStorage.getItem('global_system_announcement') && (
-  <div className="w-full bg-blue-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-md select-none">
-    <div className="flex items-center gap-2 truncate">
-      <span className="bg-blue-800 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider animate-pulse">System Broadcast</span>
-      <span className="truncate">{localStorage.getItem('global_system_announcement')}</span>
-    </div>
-    <button 
-      onClick={() => {
-        localStorage.removeItem('global_system_announcement');
-        window.location.reload(); // Force instant sync remove
-      }} 
-      className="hover:opacity-80 text-[10px] font-black uppercase tracking-wider ml-4 shrink-0"
-    >
-      Dismiss
-    </button>
-  </div>
-)}
+
+        {/* BROADCAST BANNER */}
+        {localStorage.getItem('global_system_announcement') && (
+          <div className="w-full bg-blue-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-md select-none">
+            <div className="flex items-center gap-2 truncate">
+              <span className="bg-blue-800 px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider animate-pulse">System Broadcast</span>
+              <span className="truncate">{localStorage.getItem('global_system_announcement')}</span>
+            </div>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('global_system_announcement');
+                window.location.reload();
+              }} 
+              className="hover:opacity-80 text-[10px] font-black uppercase tracking-wider ml-4 shrink-0"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         <main className="flex-1 relative flex overflow-hidden w-full">
           <AnimatePresence mode="wait">
@@ -475,11 +470,9 @@ export function DocumentWorkspace() {
                         </AnimatePresence>
                       </div>
 
-                      {/* FIXED: Removed 'hidden sm:block' wrapper constraint to preserve layout rendering across mobile frames */}
                       <div className="ml-auto pl-2 border-l border-zinc-200 dark:border-zinc-800 shrink-0">
                         <button onClick={handleCopyRawText} className="flex items-center justify-center gap-1.5 px-2.5 py-1 bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all rounded-md text-xs font-bold text-white shadow-xs h-8">
                           {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                          {/* Label hides elegantly on small screens to maintain layout spacing */}
                           <span className="hidden sm:inline">{isCopied ? 'Copied' : 'Copy'}</span>
                         </button>
                       </div>
@@ -506,7 +499,7 @@ export function DocumentWorkspace() {
                   </div>
                 </div>
 
-                {/* --- COLLAPSIBLE RIGHT TOOLBOX SideBAR Panel --- */}
+                {/* DESKTOP RIGHT TOOLBOX PANEL */}
                 <AnimatePresence>
                   {isRightSidebarOpen && (
                     <motion.div 
@@ -524,7 +517,7 @@ export function DocumentWorkspace() {
               </motion.div>
             )}
 
-            {/* STAGE 4: ACTIVE STUDY CONTEXTS */}
+            {/* STUDY CONTEXTS */}
             {pipelineState === 'study' && (
               <motion.div key="study" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 overflow-y-auto p-4 md:p-6 h-full w-full">
                 {activeStudyTool === 'flashcards' && <FlashcardModule />}
@@ -545,24 +538,82 @@ export function DocumentWorkspace() {
         </main>
       </div>
 
-      {/* --- MOBILE MODAL BUTTONS & DRAWER SHEETS --- */}
+      {/* 🌟 FLOATING DOCK (AUTO-HIDES ON DESKTOP WHEN RIGHT SIDEBAR IS OPEN) */}
       <AnimatePresence>
-        {pipelineState === 'editor' && !isMobileToolboxOpen && (
-          <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }} className="lg:hidden absolute bottom-5 right-5 z-40">
-            <Button onClick={() => setIsMobileToolboxOpen(true)} className="rounded-full w-12 h-12 shadow-md flex items-center justify-center p-0">
-              <Plus className="w-5 h-5" />
-            </Button>
+        {pipelineState === 'editor' && !isRightSidebarOpen && (
+          <motion.div 
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 320 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white/90 dark:bg-[#121214]/90 backdrop-blur-xl border border-zinc-200/80 dark:border-white/10 rounded-full p-1.5 shadow-xl flex items-center gap-1.5"
+          >
+            <button 
+              onClick={() => handleGenerateDerivatives('flashcards')} 
+              className="p-2 sm:px-3 sm:py-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-500 transition-all flex items-center gap-1.5 text-xs font-bold group"
+              title="Flashcards"
+            >
+              <Layers className="w-4 h-4" />
+              <span className="hidden md:inline group-hover:inline text-zinc-700 dark:text-zinc-300">Flashcards</span>
+            </button>
+
+            <button 
+              onClick={() => handleGenerateDerivatives('quiz')} 
+              className="p-2 sm:px-3 sm:py-2 rounded-full hover:bg-purple-50 dark:hover:bg-purple-500/10 text-purple-500 transition-all flex items-center gap-1.5 text-xs font-bold group"
+              title="Quizzes"
+            >
+              <FileQuestion className="w-4 h-4" />
+              <span className="hidden md:inline group-hover:inline text-zinc-700 dark:text-zinc-300">Quizzes</span>
+            </button>
+
+            <button 
+              onClick={() => handleGenerateDerivatives('mindmap')} 
+              className="p-2 sm:px-3 sm:py-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-emerald-500 transition-all flex items-center gap-1.5 text-xs font-bold group"
+              title="Mind Map"
+            >
+              <Network className="w-4 h-4" />
+              <span className="hidden md:inline group-hover:inline text-zinc-700 dark:text-zinc-300">Mind Map</span>
+            </button>
+
+            <button 
+              onClick={() => handleGenerateDerivatives('tutor')} 
+              className="p-2 sm:px-3 sm:py-2 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-indigo-500 transition-all flex items-center gap-1.5 text-xs font-bold group"
+              title="AI Tutor"
+            >
+              <Bot className="w-4 h-4" />
+              <span className="hidden md:inline group-hover:inline text-zinc-700 dark:text-zinc-300">AI Tutor</span>
+            </button>
+
+            <div className="w-px h-5 bg-zinc-200 dark:bg-white/10 mx-0.5" />
+
+            <button 
+              onClick={() => {
+                if (window.innerWidth >= 1024) {
+                  setIsRightSidebarOpen(true);
+                } else {
+                  setIsMobileToolboxOpen(true);
+                }
+              }} 
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-600 dark:bg-blue-500/10 dark:border-blue-500/20 dark:text-blue-400 font-bold text-xs hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-all shadow-xs"
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              <span>Tools</span>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* MOBILE TOOLBOX DRAWER */}
       <AnimatePresence>
         {isMobileToolboxOpen && (
           <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-zinc-900/40 dark:bg-black/70 backdrop-blur-xs" onClick={() => setIsMobileToolboxOpen(false)} />
             <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: "spring", bounce: 0, duration: 0.3 }} className={`relative w-full max-h-[80vh] border-t rounded-t-2xl flex flex-col overflow-hidden shadow-xl ${isDarkMode ? 'bg-[#0a0a0c] border-white/10' : 'bg-white border-zinc-200'}`}>
-              <div className="w-full flex justify-center pt-3 pb-1 cursor-pointer" onClick={() => setIsMobileToolboxOpen(false)}>
-                <div className="w-10 h-1 rounded-full bg-zinc-300 dark:bg-white/10" />
+              <div className="w-full flex justify-between items-center px-5 pt-4 pb-2 border-b border-zinc-200 dark:border-white/5">
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Study Tools</span>
+                <button onClick={() => setIsMobileToolboxOpen(false)} className="p-1 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                  <X className="w-4 h-4" />
+                </button>
               </div>
               <div className="p-5 overflow-y-auto flex-1">
                  <ToolboxContent />
@@ -571,7 +622,8 @@ export function DocumentWorkspace() {
           </div>
         )}
       </AnimatePresence>
-      {/* MOBILE LEFT SIDEBAR NAVIGATION DRAWER */}
+
+      {/* MOBILE LEFT SIDEBAR DRAWER */}
       <AnimatePresence>
         {isSidebarOpen && (
           <div className="fixed inset-0 z-50 lg:hidden flex">
